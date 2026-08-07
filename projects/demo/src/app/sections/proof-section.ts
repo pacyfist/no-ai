@@ -26,10 +26,16 @@ const PROTECTED_HEADLINE = 'Everything below this line is protected';
           </h3>
           <p class="protected-body leading-relaxed" aria-hidden="true" [noAi]="article"></p>
 
-          <!-- Protected text reads as gibberish to a screen reader. The library
-               README tells consumers to pair it with an accessible copy; the
-               demo should do what it recommends. -->
-          <p class="sr-only">{{ headline }} {{ article }}</p>
+          <!-- Describes the specimen; never reproduces it. A readable copy here
+               would sit in the served HTML as plaintext, and a scraper would
+               read that instead of parsing the font — defeating the whole
+               technique. Protected text being unreachable by assistive
+               technology is the documented cost, not a gap to paper over. -->
+          <p class="sr-only">
+            A specimen of protected text follows. Its characters are stored scrambled and repaired
+            on screen by a generated font, so it is deliberately unreadable here. Everything
+            explaining this page is unprotected and readable.
+          </p>
 
           <div class="divider my-2"></div>
           <p class="text-base-content/60 text-sm">

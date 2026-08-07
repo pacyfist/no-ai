@@ -19,13 +19,34 @@ describe('ProofSection', () => {
     expect(el.querySelector('textarea.dom-dump')).toBeTruthy();
   });
 
-  it('hides the protected paragraph from assistive technology and offers a readable copy', () => {
+  it('hides the protected paragraph from assistive technology', () => {
     const { el } = setup();
     const protectedEl = el.querySelector('.protected-body') as HTMLElement;
-    const readable = el.querySelector('.sr-only') as HTMLElement;
 
     expect(protectedEl.getAttribute('aria-hidden')).toBe('true');
-    expect(readable.textContent).toContain(PROTECTED_ARTICLE);
+  });
+
+  it('describes the specimen for screen readers without reproducing it', () => {
+    const { el } = setup();
+    const note = el.querySelector('.sr-only') as HTMLElement;
+
+    expect(note.textContent).toContain('deliberately unreadable');
+    // A readable copy would sit in the served HTML for any scraper to take,
+    // which would defeat the entire technique.
+    expect(note.textContent).not.toContain(PROTECTED_ARTICLE);
+  });
+
+  it('never renders the article in readable form anywhere in the section', () => {
+    // `disabled: false` is the shipping path — assert against that, not the
+    // fail-open path the other tests use.
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [provideNoAi({ font: new ArrayBuffer(0), seed: 7, disabled: false })],
+    });
+    const fixture = TestBed.createComponent(ProofSection);
+    fixture.detectChanges();
+
+    expect((fixture.nativeElement as HTMLElement).textContent).not.toContain('quick brown fox');
   });
 
   it('labels the panel for the reveal state', () => {

@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { NoAiDirective, NoAiFontDirective, NoAiPipe } from '@pacyfist/no-ai';
 import { CodeBlock } from './code-block';
 
-const STATIC_SAMPLE = "The directive takes the element's own content.";
 const PIPE_SNIPPET = '<p noAiFont>{{ title() | noAi }}</p>';
 
 @Component({
@@ -17,6 +16,14 @@ const PIPE_SNIPPET = '<p noAiFont>{{ title() | noAi }}</p>';
         underneath.
       </p>
 
+      <!-- The three samples are protected, so they are hidden from assistive
+           technology and not reproduced in readable form — a readable copy
+           would sit in the served HTML for any scraper to take. -->
+      <p class="sr-only">
+        Three specimens of protected text follow, one per API. Each is deliberately unreadable here;
+        the code beside it and the explanation below are readable.
+      </p>
+
       <div class="grid gap-4 lg:grid-cols-3">
         <div class="card bg-base-100 border-base-300 border">
           <div class="card-body gap-3 p-5">
@@ -24,7 +31,6 @@ const PIPE_SNIPPET = '<p noAiFont>{{ title() | noAi }}</p>';
             <p class="api-demo leading-relaxed" noAi aria-hidden="true">
               The directive takes the element's own content.
             </p>
-            <p class="sr-only">{{ staticSample }}</p>
             <app-code-block code="<p noAi>The directive takes the element's own content.</p>" />
           </div>
         </div>
@@ -33,7 +39,6 @@ const PIPE_SNIPPET = '<p noAiFont>{{ title() | noAi }}</p>';
           <div class="card-body gap-3 p-5">
             <h3 class="text-base-content/60 text-xs tracking-widest uppercase">Bound string</h3>
             <p class="api-demo leading-relaxed" aria-hidden="true" [noAi]="body()"></p>
-            <p class="sr-only">{{ body() }}</p>
             <app-code-block code='<p [noAi]="body()"></p>' />
           </div>
         </div>
@@ -42,7 +47,6 @@ const PIPE_SNIPPET = '<p noAiFont>{{ title() | noAi }}</p>';
           <div class="card-body gap-3 p-5">
             <h3 class="text-base-content/60 text-xs tracking-widest uppercase">Interpolated</h3>
             <p class="api-demo leading-relaxed" noAiFont aria-hidden="true">{{ title() | noAi }}</p>
-            <p class="sr-only">{{ title() }}</p>
             <app-code-block [code]="pipeSnippet" />
           </div>
         </div>
@@ -57,7 +61,6 @@ const PIPE_SNIPPET = '<p noAiFont>{{ title() | noAi }}</p>';
   `,
 })
 export class ApiSection {
-  protected readonly staticSample = STATIC_SAMPLE;
   protected readonly pipeSnippet = PIPE_SNIPPET;
 
   protected readonly body = signal('A string handed to the directive as an input.');

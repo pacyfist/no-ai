@@ -134,13 +134,26 @@ do. Omitting this would undercut that.
 
 ## Accessibility
 
-Protected demo text gets `aria-hidden="true"` alongside a visually hidden
-readable copy. The library README tells consumers screen readers announce
-gibberish on protected text; the demo should model the mitigation it recommends
-rather than inflict the problem on visitors who came to read about it.
+**Corrected during implementation.** The original design called for a visually
+hidden _readable copy_ beside each protected sample. That is wrong, and the
+build guard caught it: an `sr-only` copy is plaintext in the served HTML, so a
+scraper reads it instead of parsing the font. The accessibility mitigation
+silently nullified the entire technique.
 
-The reveal toggle, paste box and all navigation stay unprotected and fully
-accessible.
+What ships instead: protected text carries `aria-hidden="true"`, and the
+`sr-only` element _describes the specimen_ without reproducing it — "a specimen
+of protected text follows… deliberately unreadable here". No protected string
+appears anywhere in readable form.
+
+Protected text being unreachable by assistive technology is the cost the
+library documents, not a gap to paper over. The demo is honest about it rather
+than faking a fix that would defeat the feature. All prose, code samples, the
+reveal toggle, the paste box and navigation stay unprotected and fully
+accessible — which is exactly the library's own guidance: protect article
+bodies, leave everything assistive technology needs alone.
+
+`proof-section.spec.ts` asserts the article never appears readable with
+`disabled: false`, so this cannot regress silently.
 
 ## Build and deployment
 

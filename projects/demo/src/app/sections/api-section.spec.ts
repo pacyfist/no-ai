@@ -25,10 +25,16 @@ describe('ApiSection', () => {
     expect(snippets.some((s) => s.includes('| noAi'))).toBe(true);
   });
 
-  it('pairs every protected demo with an accessible copy', () => {
-    const el = setup();
-    expect(el.querySelectorAll('.api-demo[aria-hidden="true"]').length).toBe(3);
-    expect(el.querySelectorAll('.sr-only').length).toBe(3);
+  it('hides every protected demo from assistive technology', () => {
+    expect(setup().querySelectorAll('.api-demo[aria-hidden="true"]').length).toBe(3);
+  });
+
+  it('describes the specimens for screen readers without reproducing them', () => {
+    const el = setup(false);
+    const note = el.querySelector('.sr-only') as HTMLElement;
+
+    expect(note.textContent).toContain('deliberately unreadable');
+    expect(note.textContent).not.toContain('takes the element');
   });
 
   it('explains why the pipe needs noAiFont instead of the directive', () => {
