@@ -80,6 +80,10 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "github-pages": {
+              "outputMode": "static",
+              "baseHref": "/no-ai/"
             }
           },
           "defaultConfiguration": "production"

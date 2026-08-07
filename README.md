@@ -50,6 +50,39 @@ npm run verify:browser # end-to-end check in real Chrome (dev server must be run
 
 `npm start` and `npm test` both depend on the library being built first.
 
+## Deployment
+
+The demo publishes on every push to `main` via
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml). It is served at
+**<https://www.pacyfist.dev/no-ai/>** — the account's custom domain covers
+project pages, so `pacyfist.github.io/no-ai/` redirects there. Either way the
+site lives under the `/no-ai/` subpath, which is what `baseHref` targets.
+
+```bash
+npm run build:pages    # prerendered static site in dist/demo/browser
+npm run verify:static  # assert the built HTML is scrambled and subpath-safe
+```
+
+`verify:static` runs in CI between build and upload, so a build that would ship
+readable text fails the deploy instead of publishing it. It checks that the
+article never appears in plaintext, that `.protected-body` prerendered, and that
+no asset path is absolute — the last one because an absolute `/fonts/…` resolves
+outside the subpath, the font 404s, and the library then fails open into a
+completely unprotected page that still looks fine.
+
+The `github-pages` build configuration only carries `outputMode` and `baseHref`.
+Angular configurations do not inherit, so builds name both:
+`--configuration production,github-pages`.
+
+On Windows, run `--base-href` builds from PowerShell. Git Bash rewrites a
+leading-`/` argument into a Windows path, so `--base-href /no-ai/` silently
+becomes `/Program Files/Git/no-ai` and prerendering fails.
+
+The base font ships twice in the output: hashed under `media/` for the
+stylesheet's `@font-face`, and under `fonts/` for the runtime forge. The
+stylesheet copy has to be build-resolved so its URL survives the subpath; the
+forge copy has to keep a stable name so it can be fetched against `<base href>`.
+
 ## How it works
 
 1. A seeded PRNG builds a **derangement** of printable ASCII — every character
