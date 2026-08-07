@@ -18,6 +18,27 @@ resolves to the **built** library in `dist/`. That is deliberate: it makes any
 accidental coupling between the app and the library a compile error, so the
 library stays extractable into its own repo.
 
+## Demo styling
+
+The demo uses **Tailwind 4 + daisyUI**, set up per
+[this guide](https://www.pacyfist.dev/posts/angular-19-tailwind-4-and-scss-a-modern-step-by-step-setup-guide/)
+but in plain CSS rather than SCSS:
+
+- `postcss.config.json` at the workspace root registers `@tailwindcss/postcss`
+- `projects/demo/src/styles.css` does `@import "tailwindcss"` and `@plugin "daisyui"`
+- daisyUI themes: `light --default`, `dark --prefersdark`
+
+Two deviations from the guide, both deliberate:
+
+- **`daisyui` stable, not `@beta`.** The `beta` tag now points at 5.6.0-beta.0,
+  which is *older* than stable 5.7.x — it predates daisyUI 5's release.
+- **`@import "tailwindcss"`, not `@use`.** The guide's `@use` exists only to
+  keep Sass happy; in plain CSS `@import` is the canonical Tailwind 4 form.
+
+The **library itself has no Tailwind or daisyUI dependency** and never will —
+it sets styles on elements via `Renderer2` precisely so consumers need no
+stylesheet. daisyUI is a demo-only concern.
+
 ## Commands
 
 ```bash

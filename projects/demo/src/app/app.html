@@ -1,70 +1,148 @@
-<main class="page">
-  <header class="masthead">
-    <p class="eyebrow">&#64;pacyfist/no-ai</p>
-    <h1>Text a scraper can't read</h1>
-    <p class="lede">
-      The paragraph below is stored in the DOM as a substitution cipher. A font built in your
-      browser at page load maps the scrambled codepoints back to the right glyph outlines, so you
-      read the original words while
-      <code>innerText</code> hands out nonsense.
-    </p>
-  </header>
-
-  <div class="status" [class.status--failed]="noAi.failed()">
-    @if (noAi.failed(); as reason) {
-      <strong>Protection off</strong> — the font could not be built, so text renders normally.
-      <span class="reason">{{ reason }}</span>
-    } @else if (noAi.ready()) {
-      <strong>Protection active</strong> — font <code>{{ noAi.familyName }}</code> generated from
-      {{ noAi.map.forward.size }} remapped glyphs.
-    } @else {
-      <strong>Building the font…</strong>
-    }
+<div class="bg-base-200 min-h-screen">
+  <div class="navbar bg-base-100 border-base-300 border-b">
+    <div class="mx-auto flex w-full max-w-5xl items-center justify-between px-2">
+      <span class="font-mono text-sm font-semibold">&#64;pacyfist/no-ai</span>
+      <span class="badge badge-soft badge-primary badge-sm">Angular {{ angularVersion }}</span>
+    </div>
   </div>
 
-  <label class="toggle">
-    <input type="checkbox" [checked]="noAi.revealed()" (change)="toggleReveal($event)" />
-    <span>Withhold the generated font &mdash; show me the raw characters</span>
-  </label>
-
-  <section class="panels">
-    <article class="panel">
-      <h2 class="panel__title">What a human reads</h2>
-      <h3 class="protected-heading" noAiFont>{{ headline() | noAi }}</h3>
-      <p #protectedText class="protected-body" [noAi]="article()"></p>
-      <p class="panel__note">
-        Rendered with the generated font. Try selecting the text and copying it.
+  <main class="mx-auto w-full max-w-5xl px-4 py-10">
+    <header class="mb-8">
+      <h1 class="mb-3 text-4xl font-bold tracking-tight sm:text-5xl">Text a scraper can't read</h1>
+      <p class="text-base-content/70 max-w-3xl text-lg">
+        The paragraph below is stored in the DOM as a substitution cipher. A font built in your
+        browser at page load maps the scrambled codepoints back to the right glyph outlines, so you
+        read the original words while <code class="kbd kbd-sm">innerText</code> hands out nonsense.
       </p>
-    </article>
+    </header>
 
-    <article class="panel">
-      <h2 class="panel__title">What a scraper extracts</h2>
-      <pre class="dom-dump">{{ domText() }}</pre>
-      <p class="panel__note">
-        Read back live from <code>element.textContent</code> — this is the exact string that reaches
-        an HTML parser, a crawler, or a clipboard.
-      </p>
-    </article>
-  </section>
+    @if (noAi.failed(); as reason) {
+      <div role="alert" class="alert alert-warning alert-soft mb-4">
+        <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 9v3m0 3h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+          />
+        </svg>
+        <div>
+          <div class="font-semibold">Protection off</div>
+          <div class="text-sm opacity-80">
+            The font could not be built, so text renders normally. {{ reason }}
+          </div>
+        </div>
+      </div>
+    } @else if (noAi.ready()) {
+      <div role="alert" class="alert alert-success alert-soft mb-4">
+        <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"
+          />
+        </svg>
+        <div>
+          <div class="font-semibold">Protection active</div>
+          <div class="text-sm opacity-80">
+            Font <code class="kbd kbd-xs">{{ noAi.familyName }}</code> generated from
+            {{ noAi.map.forward.size }} remapped glyphs.
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div role="alert" class="alert mb-4">
+        <span class="loading loading-spinner loading-sm"></span>
+        <span class="font-semibold">Building the font…</span>
+      </div>
+    }
 
-  <section class="caveats">
-    <h2>What this actually buys you</h2>
-    <ul>
-      <li>
-        <strong>Stops</strong> bulk text extraction: <code>fetch</code> plus an HTML parse,
-        <code>innerText</code> scraping, copy-paste into a chat window. The server-rendered HTML is
-        scrambled too, so crawlers that never run JavaScript get nothing readable.
-      </li>
-      <li>
-        <strong>Does not stop</strong> a determined adversary. The generated font is downloadable
-        and its <code>cmap</code> describes the substitution completely — anyone willing to parse it
-        can invert the cipher. Rendering the page and running OCR also defeats it.
-      </li>
-      <li>
-        <strong>Costs you</strong> screen-reader output, in-page search, and copy-paste on protected
-        text. That is the same mechanism, not a bug. Protect article bodies; leave navigation,
-        headings, and anything assistive technology needs alone.
-      </li>
-    </ul>
-  </section>
-</main>
+    <div class="form-control mb-8">
+      <label class="label cursor-pointer justify-start gap-3">
+        <input
+          type="checkbox"
+          class="toggle toggle-warning"
+          [checked]="noAi.revealed()"
+          (change)="toggleReveal($event)"
+        />
+        <span class="label-text"
+          >Withhold the generated font &mdash; show me the raw characters</span
+        >
+      </label>
+    </div>
+
+    <div class="grid gap-5 lg:grid-cols-2">
+      <div class="card bg-base-100 border-base-300 border shadow-sm">
+        <div class="card-body">
+          <h2 class="card-title text-base-content/60 text-xs tracking-widest uppercase">
+            What a human reads
+          </h2>
+          <h3 class="mt-1 text-lg font-semibold" noAiFont>{{ headline() | noAi }}</h3>
+          <p #protectedText class="protected-body leading-relaxed" [noAi]="article()"></p>
+          <div class="divider my-2"></div>
+          <p class="text-base-content/60 text-sm">
+            Rendered with the generated font. Try selecting the text and copying it.
+          </p>
+        </div>
+      </div>
+
+      <div class="card bg-base-100 border-base-300 border shadow-sm">
+        <div class="card-body">
+          <h2 class="card-title text-base-content/60 text-xs tracking-widest uppercase">
+            What a scraper extracts
+            <span class="badge badge-warning badge-soft badge-xs ml-1 normal-case">unusable</span>
+          </h2>
+          <pre
+            class="dom-dump bg-base-200 border-warning/40 mt-1 flex-1 rounded-lg border-l-2 p-4 font-mono text-sm leading-relaxed whitespace-pre-wrap"
+            >{{ domText() }}</pre>
+          <div class="divider my-2"></div>
+          <p class="text-base-content/60 text-sm">
+            Read back live from <code class="kbd kbd-xs">element.textContent</code> &mdash; this is
+            the exact string that reaches an HTML parser, a crawler, or a clipboard.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider my-10"></div>
+
+    <section>
+      <h2 class="mb-4 text-xl font-bold">What this actually buys you</h2>
+      <div class="grid gap-4 md:grid-cols-3">
+        <div class="card bg-base-100 border-success/30 border">
+          <div class="card-body p-5">
+            <span class="badge badge-success badge-soft badge-sm mb-1">Stops</span>
+            <p class="text-base-content/80 text-sm leading-relaxed">
+              Bulk text extraction: <code class="kbd kbd-xs">fetch</code> plus an HTML parse,
+              <code class="kbd kbd-xs">innerText</code> scraping, copy-paste into a chat window. The
+              server-rendered HTML is scrambled too, so crawlers that never run JavaScript get
+              nothing readable.
+            </p>
+          </div>
+        </div>
+        <div class="card bg-base-100 border-error/30 border">
+          <div class="card-body p-5">
+            <span class="badge badge-error badge-soft badge-sm mb-1">Does not stop</span>
+            <p class="text-base-content/80 text-sm leading-relaxed">
+              A determined adversary. The generated font is downloadable and its
+              <code class="kbd kbd-xs">cmap</code> describes the substitution completely &mdash;
+              anyone willing to parse it can invert the cipher. Rendering the page and running OCR
+              also defeats it.
+            </p>
+          </div>
+        </div>
+        <div class="card bg-base-100 border-warning/30 border">
+          <div class="card-body p-5">
+            <span class="badge badge-warning badge-soft badge-sm mb-1">Costs you</span>
+            <p class="text-base-content/80 text-sm leading-relaxed">
+              Screen-reader output, in-page search, and copy-paste on protected text. That is the
+              same mechanism, not a bug. Protect article bodies; leave navigation, headings, and
+              anything assistive technology needs alone.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>

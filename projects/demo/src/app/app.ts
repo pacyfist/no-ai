@@ -1,4 +1,4 @@
-import { Component, ElementRef, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, VERSION, effect, inject, signal, viewChild } from '@angular/core';
 import { NoAiDirective, NoAiFontDirective, NoAiFontService, NoAiPipe } from '@pacyfist/no-ai';
 
 @Component({
@@ -9,6 +9,8 @@ import { NoAiDirective, NoAiFontDirective, NoAiFontService, NoAiPipe } from '@pa
 })
 export class App {
   protected readonly noAi = inject(NoAiFontService);
+
+  protected readonly angularVersion = VERSION.major;
 
   protected readonly headline = signal('Everything below this line is protected');
 
