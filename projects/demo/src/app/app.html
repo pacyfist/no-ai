@@ -76,7 +76,7 @@
       <div class="card bg-base-100 border-base-300 border shadow-sm">
         <div class="card-body">
           <h2 class="card-title text-base-content/60 text-xs tracking-widest uppercase">
-            {{ noAi.revealed() ? 'What an AI reads' : 'What a human reads' }}
+            {{ noAi.revealed() ? 'What a scraper sees' : 'What a human reads' }}
           </h2>
           <h3 class="mt-1 text-lg font-semibold" noAiFont>{{ headline() | noAi }}</h3>
           <p class="protected-body leading-relaxed" [noAi]="article()"></p>

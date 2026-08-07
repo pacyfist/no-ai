@@ -44,6 +44,6 @@ describe('App', () => {
 
     TestBed.inject(NoAiFontService).revealed.set(true);
     await fixture.whenStable();
-    expect(title()).toBe('What an AI reads');
+    expect(title()).toBe('What a scraper sees');
   });
 });
