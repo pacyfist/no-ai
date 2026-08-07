@@ -1,9 +1,10 @@
 import { Component, VERSION, computed, inject, signal } from '@angular/core';
 import { NoAiDirective, NoAiFontDirective, NoAiFontService, NoAiPipe } from '@pacyfist/no-ai';
+import { StatusBanner } from './sections/status-banner';
 
 @Component({
   selector: 'app-root',
-  imports: [NoAiDirective, NoAiFontDirective, NoAiPipe],
+  imports: [NoAiDirective, NoAiFontDirective, NoAiPipe, StatusBanner],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
@@ -40,9 +41,5 @@ export class App {
 
   protected clearPaste(): void {
     this.pasted.set('');
-  }
-
-  protected toggleReveal(event: Event): void {
-    this.noAi.revealed.set((event.target as HTMLInputElement).checked);
   }
 }
