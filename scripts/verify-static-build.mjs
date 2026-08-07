@@ -42,6 +42,17 @@ check(
   'index.html has no .protected-body element — the proof section did not prerender',
 );
 
+check(
+  html.includes('data-no-ai-ssr'),
+  'index.html carries no data-no-ai-ssr marker — the directive did not scramble during ' +
+    'prerender, so a hydrating client would scramble the text a second time',
+);
+
+check(
+  html.includes('noAiSeed'),
+  'index.html carries no noAiSeed transfer state — the client cannot rebuild the server cipher',
+);
+
 for (const { name, text } of read((f) => f.endsWith('.css'))) {
   check(
     !text.includes('url(/fonts'),
@@ -49,10 +60,30 @@ for (const { name, text } of read((f) => f.endsWith('.css'))) {
   );
 }
 
-for (const { name, text } of read((f) => f.endsWith('.js'))) {
+const scripts = read((f) => f.endsWith('.js'));
+
+for (const { name, text } of scripts) {
   check(
     !text.includes('/fonts/Roboto'),
     `${name} hardcodes /fonts/Roboto; it will 404 under ${BASE_HREF}`,
+  );
+}
+
+// The specimen is template content, so its plaintext necessarily lives in one
+// emitted chunk. That is disclosed on the page — but it must stay pinned to a
+// single chunk. A refactor that scatters it across several, or that inlines it
+// into the prerendered HTML, turns a disclosed limitation into a silent one.
+const leaking = scripts.filter(({ text }) => text.toLowerCase().includes(PLAINTEXT));
+
+check(
+  leaking.length <= 1,
+  `the specimen's plaintext appears in ${leaking.length} JS chunks ` +
+    `(${leaking.map((f) => f.name).join(', ')}); it must stay pinned to at most one`,
+);
+
+if (leaking.length === 1) {
+  console.log(
+    `note: specimen plaintext is in ${leaking[0].name}, as expected for template content`,
   );
 }
 

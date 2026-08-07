@@ -48,14 +48,20 @@ const PROTECTED_HEADLINE = 'Everything below this line is protected';
         <div class="card-body">
           <h2 class="card-title text-base-content/60 text-xs tracking-widest uppercase">
             Paste it back here
-            @if (hasPaste()) {
-              @if (pasteIsReadable()) {
+            @switch (pasteVerdict()) {
+              @case ('readable') {
                 <span class="badge badge-error badge-soft badge-xs ml-1 normal-case"
-                  >came through intact</span
+                  >came through readable</span
                 >
-              } @else {
+              }
+              @case ('scrambled') {
                 <span class="badge badge-warning badge-soft badge-xs ml-1 normal-case"
-                  >unusable</span
+                  >scrambled &mdash; unusable</span
+                >
+              }
+              @case ('foreign') {
+                <span class="badge badge-ghost badge-soft badge-xs ml-1 normal-case"
+                  >not from the paragraph</span
                 >
               }
             }
@@ -105,12 +111,24 @@ export class ProofSection {
   protected readonly hasPaste = computed(() => this.pasted().trim().length > 0);
 
   /**
-   * Whether the clipboard round-trip survived — true only if protection is off
-   * or broken, which is exactly what makes the comparison worth showing.
+   * What the clipboard actually delivered.
+   *
+   * Matching on substrings rather than the whole article, because selecting the
+   * entire paragraph is the rare case — most visitors drag across a line or
+   * two. Comparing for equality labelled every partial copy "unusable" even
+   * when the plaintext had come through perfectly readable, which is the
+   * opposite of the truth in the one interaction this page exists for.
    */
-  protected readonly pasteIsReadable = computed(
-    () => this.hasPaste() && this.pasted().trim() === this.article.trim(),
-  );
+  protected readonly pasteVerdict = computed<'readable' | 'scrambled' | 'foreign' | 'none'>(() => {
+    const text = this.pasted().trim();
+
+    // Short fragments match anything by chance; a few words is the floor at
+    // which the comparison means something.
+    if (text.length < 8) return this.hasPaste() ? 'foreign' : 'none';
+    if (this.article.includes(text)) return 'readable';
+    if (this.noAi.scramble(this.article).includes(text)) return 'scrambled';
+    return 'foreign';
+  });
 
   protected onPaste(event: Event): void {
     this.pasted.set((event.target as HTMLTextAreaElement).value);

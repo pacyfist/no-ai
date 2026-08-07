@@ -35,8 +35,11 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
             <p class="text-base-content/80 text-sm leading-relaxed">
               Screen-reader output, in-page search, and copy-paste on protected text. That is the
               same mechanism, not a bug &mdash; a readable fallback for assistive technology would
-              sit in the HTML for scrapers to take. Protect article bodies; leave navigation,
-              headings, and anything assistive technology needs alone.
+              sit in the HTML for scrapers to take. Kerning goes too: the forged font carries no
+              <code class="kbd kbd-xs">kern</code>/<code class="kbd kbd-xs">GPOS</code> table, which
+              is negligible for body text and measurable on pairs like
+              <code class="kbd kbd-xs">AV</code> at display sizes. Protect article bodies; leave
+              navigation, headings, and anything assistive technology needs alone.
             </p>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoAiFontService, provideNoAi } from '@pacyfist/no-ai';
 import { describe, expect, it } from 'vitest';
 import { PROTECTED_ARTICLE, ProofSection } from './proof-section';
@@ -60,26 +60,51 @@ describe('ProofSection', () => {
     expect(title()).toBe('What a scraper sees');
   });
 
-  it('flags a paste that came through intact', () => {
-    const { fixture, el } = setup();
+  function paste(fixture: ComponentFixture<ProofSection>, el: HTMLElement, value: string) {
     const textarea = el.querySelector('textarea') as HTMLTextAreaElement;
-
-    textarea.value = PROTECTED_ARTICLE;
+    textarea.value = value;
     textarea.dispatchEvent(new Event('input'));
     fixture.detectChanges();
+  }
 
-    expect(el.textContent).toContain('came through intact');
+  it('flags a whole-article paste that came through readable', () => {
+    const { fixture, el } = setup();
+    paste(fixture, el, PROTECTED_ARTICLE);
+    expect(el.textContent).toContain('came through readable');
   });
 
-  it('flags a paste that arrived scrambled', () => {
+  it('flags a PARTIAL readable paste as readable, not unusable', () => {
+    // The common case: a visitor drags across a line or two. Comparing the
+    // paste to the whole article labelled this "unusable" — the opposite of
+    // the truth, in the one interaction this page exists for.
     const { fixture, el } = setup();
-    const textarea = el.querySelector('textarea') as HTMLTextAreaElement;
+    paste(fixture, el, 'Pack my box with five dozen liquor jugs');
 
-    textarea.value = "Kf~0 |0#: e(0 9'6Z";
-    textarea.dispatchEvent(new Event('input'));
+    expect(el.textContent).toContain('came through readable');
+    expect(el.textContent).not.toContain('unusable');
+  });
+
+  it('flags a partial scrambled paste as unusable', () => {
+    // Needs protection actually on: with `disabled: true` the service's
+    // scramble() is the identity, so this branch could never be reached.
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [provideNoAi({ font: new ArrayBuffer(0), seed: 3, disabled: false })],
+    });
+    const fixture = TestBed.createComponent(ProofSection);
     fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+
+    const ciphered = TestBed.inject(NoAiFontService).scramble(PROTECTED_ARTICLE);
+    paste(fixture, el, ciphered.slice(20, 60));
 
     expect(el.textContent).toContain('unusable');
+  });
+
+  it('says so when the paste came from somewhere else entirely', () => {
+    const { fixture, el } = setup();
+    paste(fixture, el, 'a sentence that appears nowhere in the specimen');
+    expect(el.textContent).toContain('not from the paragraph');
   });
 
   it('clears the paste', () => {

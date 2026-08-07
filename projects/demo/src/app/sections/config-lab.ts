@@ -41,7 +41,7 @@ export const LAB_CARDS: readonly LabCard[] = [
   {
     title: 'Pinned cipher',
     explains:
-      'Reload the page: this card keeps the same substitution while the rest of the page draws a new one. For tests and reproducible builds only — a constant cipher is solved once and reused forever.',
+      'This card always draws substitution 12345, whatever seed the rest of the page is using. For tests and reproducible builds only — a constant cipher is solved once and reused forever. Note that this page is statically prerendered, so its own seed is baked in at build time and does not change between reloads either.',
     sample: 'The same substitution on every single page load.',
     code: `provideNoAi({\n  font: baseFontBuffer,\n  seed: 12345,\n})`,
     config: { ...SHARED_FONT, seed: 12345 },

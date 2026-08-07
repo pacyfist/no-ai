@@ -56,8 +56,12 @@ import { NoAiFontService } from '@pacyfist/no-ai';
           [checked]="noAi.revealed()"
           (change)="toggleReveal($event)"
         />
+        <!-- Scoped deliberately: this drives the shell's service only. The
+             configuration cards each own a separate instance and are unaffected,
+             so a page-wide claim here would be false. -->
         <span class="label-text"
-          >Withhold the generated font &mdash; show me the raw characters</span
+          >Withhold the generated font from this page's protected text &mdash; show me the raw
+          characters</span
         >
       </label>
     </div>
