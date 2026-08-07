@@ -1,59 +1,44 @@
-# NoAi
+# no-ai
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.11.
+Angular workspace for **[@pacyfist/no-ai](projects/pacyfist/no-ai/README.md)** — a
+library that scrambles text in the DOM and repairs it on screen with a font
+generated at runtime, so bulk scrapers extract gibberish.
 
-## Development server
+## Layout
 
-To start a local development server, run:
-
-```bash
-ng serve
+```
+projects/
+  pacyfist/no-ai/   the publishable library (ng-packagr)
+  demo/             SSR demo app, consumes the library as an outside user would
+scripts/            real-browser verification helpers
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+The demo imports `@pacyfist/no-ai` through the workspace path alias, which
+resolves to the **built** library in `dist/`. That is deliberate: it makes any
+accidental coupling between the app and the library a compile error, so the
+library stays extractable into its own repo.
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Commands
 
 ```bash
-ng generate --help
+npm run build:lib      # build the library — required before building the demo
+npm start              # dev server for the demo on :4321
+npm test               # unit tests for library + demo
+npm run verify:browser # end-to-end check in real Chrome (dev server must be running)
 ```
 
-## Building
+`npm start` and `npm test` both depend on the library being built first.
 
-To build the project run:
+## How it works
 
-```bash
-ng build
-```
+1. A seeded PRNG builds a **derangement** of printable ASCII — every character
+   maps to a different one. Space is excluded so lines can still wrap.
+2. Text is scrambled through that map before it reaches the DOM, on the server
+   as well as the client. The seed crosses via `TransferState`.
+3. In the browser, opentype.js parses a base `.ttf`, and a new font is built
+   whose glyphs are addressed by the *scrambled* codepoints while drawing the
+   *original* outlines. It is registered with the `FontFace` API.
+4. Protected elements point at that font. Readers see the real words.
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+See the [library README](projects/pacyfist/no-ai/README.md) for what this does
+and does not defend against — it is a cost increase for scrapers, not secrecy.

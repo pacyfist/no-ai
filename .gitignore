@@ -39,6 +39,10 @@ testem.log
 /typings
 __screenshots__/
 
+# Output of scripts/verify-in-browser.mjs and scripts/compare-kerning.mjs
+/scripts/*.png
+/scripts/.last-verify.json
+
 # System files
 .DS_Store
 Thumbs.db

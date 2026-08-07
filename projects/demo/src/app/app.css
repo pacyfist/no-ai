@@ -1,0 +1,153 @@
+.page {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 5rem;
+}
+
+.masthead {
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 2rem;
+  margin-bottom: 2rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+
+h1 {
+  margin: 0 0 1rem;
+  font-size: clamp(1.9rem, 5vw, 2.75rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.lede {
+  margin: 0;
+  max-width: 46rem;
+  font-size: 1.0625rem;
+  color: var(--ink-soft);
+}
+
+.status {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  background: var(--surface);
+  font-size: 0.9375rem;
+}
+
+.status--failed {
+  border-left-color: var(--warn);
+}
+
+.reason {
+  color: var(--ink-soft);
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 1.25rem 0 2rem;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: 1.25rem;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.panel__title {
+  margin: 0 0 1rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+
+.protected-heading {
+  margin: 0 0 0.75rem;
+  font-size: 1.125rem;
+  line-height: 1.3;
+}
+
+.protected-body {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.dom-dump {
+  margin: 0;
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  /* The scrambled string has no spaces to break on in places, so force wrapping. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: var(--warn);
+}
+
+.panel__note {
+  margin: 1rem 0 0;
+  padding-top: 0.875rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+.caveats {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--rule);
+}
+
+.caveats h2 {
+  margin: 0 0 1rem;
+  font-size: 1.125rem;
+}
+
+.caveats ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.875rem;
+  max-width: 46rem;
+}
+
+.caveats li {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.caveats strong {
+  color: var(--ink);
+}
+
+code {
+  font-family: var(--mono);
+  font-size: 0.875em;
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  background: var(--code-bg);
+}

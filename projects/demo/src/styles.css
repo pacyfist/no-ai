@@ -1,0 +1,47 @@
+/* The very font the library reads outlines from, so protected text and normal
+   text are the same typeface. */
+@font-face {
+  font-family: 'Roboto';
+  src: url('/fonts/Roboto-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --mono: ui-monospace, 'SFMono-Regular', 'Cascadia Mono', Menlo, Consolas, monospace;
+  --ink: #14161a;
+  --ink-soft: #5b6470;
+  --surface: #ffffff;
+  --page-bg: #f6f7f9;
+  --rule: #e2e5ea;
+  --code-bg: #eceff3;
+  --accent: #3a5ccc;
+  --warn: #b3541e;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #e8eaed;
+    --ink-soft: #99a2ae;
+    --surface: #16181d;
+    --page-bg: #0d0f12;
+    --rule: #282c34;
+    --code-bg: #22262e;
+    --accent: #8fa8ff;
+    --warn: #e08c4a;
+  }
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  background: var(--page-bg);
+  color: var(--ink);
+  font-family: 'Roboto', system-ui, sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
