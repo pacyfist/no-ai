@@ -41,14 +41,14 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-| Option | Default | Purpose |
-|---|---|---|
-| `font` | *required* | URL, `ArrayBuffer`, or `() => Promise<ArrayBuffer>` |
-| `fallbackFontFamily` | `'sans-serif'` | Renders characters outside the charset — spaces, accents, emoji |
-| `charset` | printable ASCII, no space | Codepoints the cipher covers |
-| `seed` | random per page load | Pin the cipher. Tests and reproducible builds only |
-| `hideUntilReady` | `true` | Keep protected text invisible until the font lands |
-| `disabled` | `false` | Turn everything off, per environment |
+| Option               | Default                   | Purpose                                                         |
+| -------------------- | ------------------------- | --------------------------------------------------------------- |
+| `font`               | _required_                | URL, `ArrayBuffer`, or `() => Promise<ArrayBuffer>`             |
+| `fallbackFontFamily` | `'sans-serif'`            | Renders characters outside the charset — spaces, accents, emoji |
+| `charset`            | printable ASCII, no space | Codepoints the cipher covers                                    |
+| `seed`               | random per page load      | Pin the cipher. Tests and reproducible builds only              |
+| `hideUntilReady`     | `true`                    | Keep protected text invisible until the font lands              |
+| `disabled`           | `false`                   | Turn everything off, per environment                            |
 
 ## Usage
 
@@ -74,10 +74,10 @@ interpolates into makes the two fight over `textContent`.
 ```ts
 const noAi = inject(NoAiFontService);
 
-noAi.ready();      // font registered
-noAi.failed();     // error message, or null
-noAi.active();     // protection actually in force
-noAi.revealed.set(true);  // withhold the font — see the raw characters
+noAi.ready(); // font registered
+noAi.failed(); // error message, or null
+noAi.active(); // protection actually in force
+noAi.revealed.set(true); // withhold the font — see the raw characters
 ```
 
 ## Server-side rendering
@@ -138,4 +138,9 @@ Useful for pre-scrambling static content in a build step.
 
 ## License
 
-MIT. The base font is yours to supply and license.
+**AGPL-3.0-only.** Read this before adopting it: the AGPL's network clause
+(§13) applies to software offered to users over a network, which is what a web
+page is. Using this library in a site you serve publicly means that site's
+source falls under the same terms. That is the intent, not an oversight.
+
+The base font is yours to supply and license.

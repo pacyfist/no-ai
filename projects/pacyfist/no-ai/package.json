@@ -10,7 +10,7 @@
     "opentype",
     "obfuscation"
   ],
-  "license": "MIT",
+  "license": "AGPL-3.0-only",
   "peerDependencies": {
     "@angular/common": "^21.2.0",
     "@angular/core": "^21.2.0",

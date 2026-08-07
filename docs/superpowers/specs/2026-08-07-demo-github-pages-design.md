@@ -32,18 +32,23 @@ footer — that composes them.
 The current template is 178 lines holding every concern at once. The new content
 would roughly triple that, so it splits:
 
-| Component                    | Purpose                                                            |
-| ---------------------------- | ------------------------------------------------------------------ |
-| `status-banner`              | ready / failed / loading alert, plus the reveal toggle             |
-| `proof-section`              | human view beside the paste-back box (existing content, tightened) |
-| `raw-html-section`           | the bytes a crawler actually downloads                             |
-| `api-section`                | the three template APIs, each rendered live beside its snippet     |
-| `config-lab` + `config-card` | one live card per config option                                    |
-| `tradeoffs-section`          | Stops / Does not stop / Costs you (existing content)               |
-| `install-section`            | install command, peer deps, base-font requirement, GitHub link     |
+| Component                    | Purpose                                                                 |
+| ---------------------------- | ----------------------------------------------------------------------- |
+| `status-banner`              | ready / failed / loading alert, plus the reveal toggle                  |
+| `proof-section`              | human view beside the paste-back box (existing content, tightened)      |
+| `raw-html-section`           | the bytes a crawler actually downloads                                  |
+| `api-section`                | the three template APIs, each rendered live beside its snippet          |
+| `config-lab` + `config-card` | one live card per config option                                         |
+| `tradeoffs-section`          | Stops / Does not stop / Costs you (existing content)                    |
+| `install-section`            | install command, peer deps, base-font requirement, license, GitHub link |
 
 A presentational `code-block` component renders snippets for `api-section`,
 `config-lab` and `install-section`.
+
+`install-section` states **AGPL-3.0-only** plainly, not in fine print. The
+network clause covers any publicly served site that uses the library, which is
+the whole audience for it — someone deciding whether to adopt needs that
+before the install command, not after.
 
 Each section owns one idea, takes no inputs beyond what it renders, and reads
 runtime state from `NoAiFontService` directly. They can be understood and tested

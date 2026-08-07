@@ -31,7 +31,7 @@ but in plain CSS rather than SCSS:
 Two deviations from the guide, both deliberate:
 
 - **`daisyui` stable, not `@beta`.** The `beta` tag now points at 5.6.0-beta.0,
-  which is *older* than stable 5.7.x — it predates daisyUI 5's release.
+  which is _older_ than stable 5.7.x — it predates daisyUI 5's release.
 - **`@import "tailwindcss"`, not `@use`.** The guide's `@use` exists only to
   keep Sass happy; in plain CSS `@import` is the canonical Tailwind 4 form.
 
@@ -57,9 +57,19 @@ npm run verify:browser # end-to-end check in real Chrome (dev server must be run
 2. Text is scrambled through that map before it reaches the DOM, on the server
    as well as the client. The seed crosses via `TransferState`.
 3. In the browser, opentype.js parses a base `.ttf`, and a new font is built
-   whose glyphs are addressed by the *scrambled* codepoints while drawing the
-   *original* outlines. It is registered with the `FontFace` API.
+   whose glyphs are addressed by the _scrambled_ codepoints while drawing the
+   _original_ outlines. It is registered with the `FontFace` API.
 4. Protected elements point at that font. Readers see the real words.
 
 See the [library README](projects/pacyfist/no-ai/README.md) for what this does
 and does not defend against — it is a cost increase for scrapers, not secrecy.
+
+## License
+
+**AGPL-3.0-only** — see [LICENSE](LICENSE). The AGPL's network clause reaches
+software served over a network, so a public site using this library is covered.
+Deliberate; weigh it before adopting.
+
+`Roboto-Regular.ttf`, vendored under `projects/demo/public/fonts/` and
+`projects/pacyfist/no-ai/testing/`, is Apache-2.0 and is not covered by the
+above.
