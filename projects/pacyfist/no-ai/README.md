@@ -90,6 +90,14 @@ text directly into the HTML. The seed travels to the client through Angular's
 `TransferState`, both sides derive the same cipher, and hydration sees identical
 text.
 
+Elements the server scrambled carry a `data-no-ai-ssr` attribute. The `noAi`
+directive in its element-content form (`<p noAi>Text</p>`) takes the element's
+own text as the original, and on a hydrating page that text is already
+ciphertext — scrambling it again would leave the reader looking at the server's
+output, since the font undoes only one layer. The attribute is how a hydrating
+element is told apart from one the browser rendered itself, such as a `@defer`
+block whose text is still the readable template content.
+
 ## What this actually defends against
 
 **Stops** bulk text extraction — `fetch` plus an HTML parse, `innerText`

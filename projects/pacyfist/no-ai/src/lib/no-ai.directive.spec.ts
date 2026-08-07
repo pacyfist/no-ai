@@ -36,6 +36,11 @@ class BoundHost {
   readonly body = signal('Hello, world');
 }
 
+// Empty so the test can plant text into the element before the directive
+// initialises, which is exactly what hydration looks like.
+@Component({ template: '<p noAi></p>', imports: [NoAiDirective] })
+class EmptyHost {}
+
 function setup<T>(host: Type<T>, service: Record<string, unknown> = fakeService()) {
   TestBed.configureTestingModule({
     providers: [{ provide: NoAiFontService, useValue: service }],
@@ -84,6 +89,53 @@ describe('NoAiDirective', () => {
       }),
     );
     expect(el.textContent).toBe('Hello, world');
+  });
+
+  it('does not scramble twice when hydrating server-scrambled text', () => {
+    // The server left ciphertext in the DOM and marked the element. Reading
+    // that text as the original would scramble it again, and the font undoes
+    // only one layer — the reader would be shown the server's ciphertext.
+    TestBed.configureTestingModule({
+      providers: [{ provide: NoAiFontService, useValue: fakeService() }],
+    });
+    const fixture = TestBed.createComponent(EmptyHost);
+    const el = fixture.nativeElement.querySelector('p') as HTMLElement;
+
+    el.textContent = scrambleText('Hello, world', MAP);
+    el.setAttribute('data-no-ai-ssr', '');
+
+    fixture.detectChanges();
+
+    expect(el.textContent).toBe(scrambleText('Hello, world', MAP));
+  });
+
+  it('restores the readable text when hydration is followed by a font failure', () => {
+    const service = fakeService();
+    TestBed.configureTestingModule({
+      providers: [{ provide: NoAiFontService, useValue: service }],
+    });
+    const fixture = TestBed.createComponent(EmptyHost);
+    const el = fixture.nativeElement.querySelector('p') as HTMLElement;
+
+    el.textContent = scrambleText('Hello, world', MAP);
+    el.setAttribute('data-no-ai-ssr', '');
+    fixture.detectChanges();
+
+    // Font dies after hydration: the directive must still know the real words.
+    (service.active as WritableSignal<boolean>).set(false);
+    service.scramble = (text: string) => text;
+    (service.fontStack as WritableSignal<string>).set('sans-serif');
+    fixture.detectChanges();
+
+    expect(el.textContent).toBe('Hello, world');
+  });
+
+  it('treats unmarked text as already readable, so client rendering is untouched', () => {
+    // A deferred block rendered in the browser carries readable template text
+    // and no marker. Inverting it would corrupt it.
+    const { el } = setup(StaticHost);
+    expect(el.textContent).toBe(scrambleText('Hello, world', MAP));
+    expect(el.hasAttribute('data-no-ai-ssr')).toBe(false);
   });
 
   it('re-scrambles when the bound text changes', () => {
