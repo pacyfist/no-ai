@@ -76,13 +76,13 @@
       <div class="card bg-base-100 border-base-300 border shadow-sm">
         <div class="card-body">
           <h2 class="card-title text-base-content/60 text-xs tracking-widest uppercase">
-            What a human reads
+            {{ noAi.revealed() ? 'What an AI reads' : 'What a human reads' }}
           </h2>
           <h3 class="mt-1 text-lg font-semibold" noAiFont>{{ headline() | noAi }}</h3>
-          <p #protectedText class="protected-body leading-relaxed" [noAi]="article()"></p>
+          <p class="protected-body leading-relaxed" [noAi]="article()"></p>
           <div class="divider my-2"></div>
           <p class="text-base-content/60 text-sm">
-            Rendered with the generated font. Try selecting the text and copying it.
+            Select this paragraph and copy it, then paste it on the right.
           </p>
         </div>
       </div>
@@ -90,16 +90,46 @@
       <div class="card bg-base-100 border-base-300 border shadow-sm">
         <div class="card-body">
           <h2 class="card-title text-base-content/60 text-xs tracking-widest uppercase">
-            What a scraper extracts
-            <span class="badge badge-warning badge-soft badge-xs ml-1 normal-case">unusable</span>
+            Paste it back here
+            @if (hasPaste()) {
+              @if (pasteIsReadable()) {
+                <span class="badge badge-error badge-soft badge-xs ml-1 normal-case"
+                  >came through intact</span
+                >
+              } @else {
+                <span class="badge badge-warning badge-soft badge-xs ml-1 normal-case"
+                  >unusable</span
+                >
+              }
+            }
           </h2>
-          <pre
-            class="dom-dump bg-base-200 border-warning/40 mt-1 flex-1 rounded-lg border-l-2 p-4 font-mono text-sm leading-relaxed whitespace-pre-wrap"
-            >{{ domText() }}</pre>
+
+          <textarea
+            class="textarea dom-dump mt-1 min-h-40 w-full flex-1 font-mono text-sm leading-relaxed"
+            placeholder="Paste the copied paragraph here…"
+            aria-label="Paste the copied paragraph"
+            spellcheck="false"
+            autocapitalize="off"
+            autocomplete="off"
+            [value]="pasted()"
+            (input)="onPaste($event)"
+          ></textarea>
+
+          @if (hasPaste()) {
+            <div class="mt-2 flex items-center justify-between gap-2">
+              <span class="text-base-content/60 text-xs">
+                {{ pasted().length }} characters pasted
+              </span>
+              <button type="button" class="btn btn-ghost btn-xs" (click)="clearPaste()">
+                Clear
+              </button>
+            </div>
+          }
+
           <div class="divider my-2"></div>
           <p class="text-base-content/60 text-sm">
-            Read back live from <code class="kbd kbd-xs">element.textContent</code> &mdash; this is
-            the exact string that reaches an HTML parser, a crawler, or a clipboard.
+            The clipboard carries the DOM's characters, not the glyphs you saw. This is the same
+            string an HTML parser or a crawler receives.
           </p>
         </div>
       </div>

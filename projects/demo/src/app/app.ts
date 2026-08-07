@@ -1,4 +1,4 @@
-import { Component, ElementRef, VERSION, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, VERSION, computed, inject, signal } from '@angular/core';
 import { NoAiDirective, NoAiFontDirective, NoAiFontService, NoAiPipe } from '@pacyfist/no-ai';
 
 @Component({
@@ -21,19 +21,25 @@ export class App {
       'was generated in your browser a moment ago.',
   );
 
-  private readonly protectedText = viewChild<ElementRef<HTMLElement>>('protectedText');
+  /** Whatever the visitor pasted back after copying the protected paragraph. */
+  protected readonly pasted = signal('');
 
-  /** The literal text content of the protected element — what a scraper walks away with. */
-  protected readonly domText = signal('');
+  protected readonly hasPaste = computed(() => this.pasted().trim().length > 0);
 
-  constructor() {
-    effect(() => {
-      // Re-read once the font lands and whenever the reveal toggle flips.
-      this.noAi.ready();
-      this.noAi.revealed();
-      const el = this.protectedText()?.nativeElement;
-      if (el) this.domText.set(el.textContent ?? '');
-    });
+  /**
+   * Whether the clipboard round-trip survived — true only if protection is off
+   * or broken, which is exactly what makes the comparison worth showing.
+   */
+  protected readonly pasteIsReadable = computed(
+    () => this.hasPaste() && this.pasted().trim() === this.article().trim(),
+  );
+
+  protected onPaste(event: Event): void {
+    this.pasted.set((event.target as HTMLTextAreaElement).value);
+  }
+
+  protected clearPaste(): void {
+    this.pasted.set('');
   }
 
   protected toggleReveal(event: Event): void {

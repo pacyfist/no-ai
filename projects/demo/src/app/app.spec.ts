@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { provideNoAi } from '@pacyfist/no-ai';
+import { NoAiFontService, provideNoAi } from '@pacyfist/no-ai';
 import { App } from './app';
 
 describe('App', () => {
@@ -26,11 +26,24 @@ describe('App', () => {
     expect(compiled.querySelector('h1')?.textContent).toContain("Text a scraper can't read");
   });
 
-  it('shows the reader panel and the scraper panel', async () => {
+  it('shows the protected paragraph and a paste target', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.protected-body')).toBeTruthy();
-    expect(compiled.querySelector('.dom-dump')).toBeTruthy();
+    expect(compiled.querySelector('textarea.dom-dump')).toBeTruthy();
+  });
+
+  it('labels the left panel for the reveal state', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const compiled = fixture.nativeElement as HTMLElement;
+    const title = () => compiled.querySelector('.card .card-title')?.textContent?.trim();
+
+    expect(title()).toBe('What a human reads');
+
+    TestBed.inject(NoAiFontService).revealed.set(true);
+    await fixture.whenStable();
+    expect(title()).toBe('What an AI reads');
   });
 });

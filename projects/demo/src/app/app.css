@@ -1,7 +1,7 @@
 /* daisyUI carries the styling. Only rules it has no utility for live here. */
 
-/* The scrambled dump has long runs without a break opportunity, so wrapping
-   must be forced or the panel scrolls sideways. */
+/* Pasted scrambled text has long runs without a break opportunity, so wrapping
+   must be forced or the textarea scrolls sideways. */
 .dom-dump {
   overflow-wrap: anywhere;
 }
