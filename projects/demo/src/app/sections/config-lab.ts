@@ -26,6 +26,17 @@ const DIGITS = Array.from({ length: 10 }, (_, i) => 0x30 + i);
 /** Shared by every card, so the base font is fetched once for the whole page. */
 const SHARED_FONT = { font: baseFontBuffer, fallbackFontFamily: "'Roboto', sans-serif" } as const;
 
+/**
+ * Every card that forges a font needs its own seed.
+ *
+ * `NoAiFontService` derives the FontFace family name from the seed alone
+ * (`NoAi-${seed.toString(36)}`). Cards without an explicit seed all inherit the
+ * page's transferred seed, so they register different cmaps under one family
+ * name — and the browser then paints text with whichever face it picked. The
+ * narrow-charset card is where that shows: its letters are outside the cipher
+ * and must stay plain, but the shell's full-ASCII face would remap them.
+ */
+
 export const LAB_CARDS: readonly LabCard[] = [
   {
     title: 'Pinned cipher',
@@ -48,16 +59,16 @@ export const LAB_CARDS: readonly LabCard[] = [
     explains:
       'Only the ten digits are in the cipher, so letters pass through untouched. Useful when just the numbers matter — prices, counts, phone numbers.',
     sample: 'Order 8391 shipped on 2026-08-07 for 429 units.',
-    code: `provideNoAi({\n  font: baseFontBuffer,\n  charset: [0x30, /* … */ 0x39],\n})`,
-    config: { ...SHARED_FONT, charset: DIGITS },
+    code: `provideNoAi({\n  font: baseFontBuffer,\n  charset: [0x30, /* … */ 0x39],\n  seed: 24680, // own family name\n})`,
+    config: { ...SHARED_FONT, charset: DIGITS, seed: 24680 },
   },
   {
     title: 'No hiding',
     explains:
       'Protected text paints immediately instead of waiting for the font, so a reader may glimpse raw ciphertext. The trade is that visitors without JavaScript see scrambled text rather than nothing at all.',
     sample: 'Visible from the first frame, gibberish included.',
-    code: `provideNoAi({\n  font: baseFontBuffer,\n  hideUntilReady: false,\n})`,
-    config: { ...SHARED_FONT, hideUntilReady: false },
+    code: `provideNoAi({\n  font: baseFontBuffer,\n  hideUntilReady: false,\n  seed: 13579, // own family name\n})`,
+    config: { ...SHARED_FONT, hideUntilReady: false, seed: 13579 },
   },
 ];
 

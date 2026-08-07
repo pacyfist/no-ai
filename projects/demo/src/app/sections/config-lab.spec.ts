@@ -24,6 +24,29 @@ describe('LAB_CARDS', () => {
     expect(sources.size).toBe(1);
   });
 
+  it('pins a seed on every card that forges a font', () => {
+    // The family name is derived from the seed alone, so a card without one
+    // inherits the page seed and registers its cmap under the shell's family.
+    for (const card of LAB_CARDS.filter((c) => !c.config.disabled)) {
+      expect(card.config.seed, card.title).toBeTypeOf('number');
+    }
+  });
+
+  it('never lets two cards share a FontFace family name', () => {
+    TestBed.configureTestingModule({
+      providers: [provideNoAi({ font: new ArrayBuffer(0), seed: 999, disabled: true })],
+    });
+    const parent = TestBed.inject(EnvironmentInjector);
+
+    const families = LAB_CARDS.filter((c) => !c.config.disabled).map(
+      (card) =>
+        createEnvironmentInjector([provideNoAi(card.config)], parent).get(NoAiFontService)
+          .familyName,
+    );
+
+    expect(new Set(families).size).toBe(families.length);
+  });
+
   it('builds an isolated service per card, each honouring its own config', () => {
     TestBed.configureTestingModule({
       providers: [provideNoAi({ font: new ArrayBuffer(0), seed: 999, disabled: true })],
