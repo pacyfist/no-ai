@@ -70,6 +70,10 @@ and does not defend against — it is a cost increase for scrapers, not secrecy.
 software served over a network, so a public site using this library is covered.
 Deliberate; weigh it before adopting.
 
-`Roboto-Regular.ttf`, vendored under `projects/demo/public/fonts/` and
-`projects/pacyfist/no-ai/testing/`, is Apache-2.0 and is not covered by the
-above.
+`Roboto-Regular.ttf` is vendored twice — once as a demo asset, once as a library
+test fixture that must survive the library being extracted into its own repo.
+Both copies are Copyright Google LLC under the **Apache License 2.0**, not the
+AGPL, with the license text beside each:
+
+- [`projects/demo/public/fonts/Roboto-LICENSE.txt`](projects/demo/public/fonts/Roboto-LICENSE.txt)
+- [`projects/pacyfist/no-ai/testing/Roboto-LICENSE.txt`](projects/pacyfist/no-ai/testing/Roboto-LICENSE.txt)
