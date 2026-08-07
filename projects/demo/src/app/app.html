@@ -2,7 +2,16 @@
   <div class="navbar bg-base-100 border-base-300 border-b">
     <div class="mx-auto flex w-full max-w-5xl items-center justify-between px-2">
       <span class="font-mono text-sm font-semibold">&#64;pacyfist/no-ai</span>
-      <span class="badge badge-soft badge-primary badge-sm">Angular {{ angularVersion }}</span>
+      <div class="flex items-center gap-2">
+        <span class="badge badge-soft badge-primary badge-sm">Angular {{ angularVersion }}</span>
+        <a
+          class="btn btn-ghost btn-xs"
+          href="https://github.com/pacyfist/no-ai"
+          rel="noopener"
+          target="_blank"
+          >GitHub</a
+        >
+      </div>
     </div>
   </div>
 
@@ -17,50 +26,17 @@
     </header>
 
     <app-status-banner />
-
     <app-proof-section />
     <app-raw-html-section />
     <app-api-section />
     <app-config-lab />
-
-    <div class="divider my-10"></div>
-
-    <section>
-      <h2 class="mb-4 text-xl font-bold">What this actually buys you</h2>
-      <div class="grid gap-4 md:grid-cols-3">
-        <div class="card bg-base-100 border-success/30 border">
-          <div class="card-body p-5">
-            <span class="badge badge-success badge-soft badge-sm mb-1">Stops</span>
-            <p class="text-base-content/80 text-sm leading-relaxed">
-              Bulk text extraction: <code class="kbd kbd-xs">fetch</code> plus an HTML parse,
-              <code class="kbd kbd-xs">innerText</code> scraping, copy-paste into a chat window. The
-              server-rendered HTML is scrambled too, so crawlers that never run JavaScript get
-              nothing readable.
-            </p>
-          </div>
-        </div>
-        <div class="card bg-base-100 border-error/30 border">
-          <div class="card-body p-5">
-            <span class="badge badge-error badge-soft badge-sm mb-1">Does not stop</span>
-            <p class="text-base-content/80 text-sm leading-relaxed">
-              A determined adversary. The generated font is downloadable and its
-              <code class="kbd kbd-xs">cmap</code> describes the substitution completely &mdash;
-              anyone willing to parse it can invert the cipher. Rendering the page and running OCR
-              also defeats it.
-            </p>
-          </div>
-        </div>
-        <div class="card bg-base-100 border-warning/30 border">
-          <div class="card-body p-5">
-            <span class="badge badge-warning badge-soft badge-sm mb-1">Costs you</span>
-            <p class="text-base-content/80 text-sm leading-relaxed">
-              Screen-reader output, in-page search, and copy-paste on protected text. That is the
-              same mechanism, not a bug. Protect article bodies; leave navigation, headings, and
-              anything assistive technology needs alone.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
+    <app-tradeoffs-section />
+    <app-install-section />
   </main>
+
+  <footer class="footer footer-center text-base-content/60 border-base-300 mt-10 border-t p-6">
+    <p class="text-sm">
+      &#64;pacyfist/no-ai &mdash; AGPL-3.0-only. Roboto is Apache-2.0, Copyright Google LLC.
+    </p>
+  </footer>
 </div>

@@ -27,12 +27,20 @@ describe('App', () => {
     );
   });
 
-  it('composes the sections it owns', async () => {
+  it('composes every section', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const el = fixture.nativeElement as HTMLElement;
 
-    for (const selector of ['app-status-banner', 'app-proof-section']) {
+    for (const selector of [
+      'app-status-banner',
+      'app-proof-section',
+      'app-raw-html-section',
+      'app-api-section',
+      'app-config-lab',
+      'app-tradeoffs-section',
+      'app-install-section',
+    ]) {
       expect(el.querySelector(selector), selector).toBeTruthy();
     }
   });
