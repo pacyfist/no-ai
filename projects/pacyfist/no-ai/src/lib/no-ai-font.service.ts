@@ -1,6 +1,7 @@
 import {
   DOCUMENT,
   Injectable,
+  OnDestroy,
   PLATFORM_ID,
   TransferState,
   afterNextRender,
@@ -44,11 +45,17 @@ async function resolveFontSource(source: NoAiFontSource): Promise<ArrayBuffer> {
  * Only the font is loaded asynchronously, and only in a browser.
  */
 @Injectable()
-export class NoAiFontService {
+export class NoAiFontService implements OnDestroy {
   private readonly config = inject(NO_AI_CONFIG);
   private readonly document = inject(DOCUMENT);
   private readonly transferState = inject(TransferState);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
+  /** The face registered in `document.fonts`, so it can be removed on destroy. */
+  private face: FontFace | undefined;
+
+  /** Set once `ngOnDestroy` runs, so a load already in flight knows not to register its face. */
+  private destroyed = false;
 
   /** The substitution in force for this page load. */
   readonly map: ScrambleMap;
@@ -120,6 +127,14 @@ export class NoAiFontService {
       const forged = forgeScrambledFont(parseBaseFont(buffer), this.map, this.familyName);
       const face = new FontFace(this.familyName, forged);
       await face.load();
+
+      // The service can be destroyed while `face.load()` is in flight — a child
+      // injector's service is torn down on every config change. Registering the
+      // face after that point would leak it: nothing would ever call
+      // `ngOnDestroy` again to remove it.
+      if (this.destroyed) return;
+
+      this.face = face;
       this.document.fonts.add(face);
       this.ready.set(true);
     } catch (error) {
@@ -128,6 +143,14 @@ export class NoAiFontService {
       console.error('[no-ai] disabled — could not build the protective font.', error);
       this.failed.set((error as Error)?.message ?? String(error));
       this.ready.set(true);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed = true;
+    if (this.face) {
+      this.document.fonts.delete(this.face);
+      this.face = undefined;
     }
   }
 }
