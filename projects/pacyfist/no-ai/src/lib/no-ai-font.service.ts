@@ -71,7 +71,7 @@ export class NoAiFontService implements OnDestroy {
 
   /**
    * Demo/debug switch. When true the forged font is withheld, exposing the raw
-   * scrambled characters — what a scraper receives.
+   * scrambled characters - what a scraper receives.
    */
   readonly revealed = signal(false);
 
@@ -128,7 +128,7 @@ export class NoAiFontService implements OnDestroy {
       const face = new FontFace(this.familyName, forged);
       await face.load();
 
-      // The service can be destroyed while `face.load()` is in flight — a child
+      // The service can be destroyed while `face.load()` is in flight - a child
       // injector's service is torn down on every config change. Registering the
       // face after that point would leak it: nothing would ever call
       // `ngOnDestroy` again to remove it.
@@ -140,7 +140,7 @@ export class NoAiFontService implements OnDestroy {
     } catch (error) {
       // Fail open. Unreadable content is worse than unprotected content, so
       // `active()` flips false and every directive restores its original text.
-      console.error('[no-ai] disabled — could not build the protective font.', error);
+      console.error('[no-ai] disabled - could not build the protective font.', error);
       this.failed.set((error as Error)?.message ?? String(error));
       this.ready.set(true);
     }

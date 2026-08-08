@@ -63,7 +63,7 @@ const DEFAULT_TEXT = 'The letters you are reading were never stored.';
       </div>
       <div class="stat">
         <div class="stat-title">fixed points</div>
-        <div class="stat-value font-mono text-2xl">0</div>
+        <div class="stat-value font-mono text-2xl">{{ fixedPoints() }}</div>
         <div class="stat-desc">a derangement</div>
       </div>
       <div class="stat">
@@ -87,6 +87,17 @@ export class HeroMirror {
   protected readonly text = signal(DEFAULT_TEXT);
   protected readonly scrambled = computed(() => this.noAi.scramble(this.text()));
   protected readonly glyphCount = computed(() => this.noAi.map.forward.size);
+
+  /**
+   * Counted rather than hardcoded.
+   *
+   * It is always zero, because the library builds a derangement. The point is
+   * that this page reports what it measured, on a page whose whole argument is
+   * that it shows rather than claims.
+   */
+  protected readonly fixedPoints = computed(
+    () => [...this.noAi.map.forward].filter(([from, to]) => from === to).length,
+  );
 
   protected onType(event: Event): void {
     this.text.set((event.target as HTMLInputElement).value);

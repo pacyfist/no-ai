@@ -40,10 +40,12 @@ interface Pair {
 
     <div class="card bg-base-100 shadow-sm">
       <div class="card-body p-4">
-        @if (seed(); as currentSeed) {
+        <!-- Explicit null check, not truthiness: a drawn seed of 0 is falsy and
+             would strand this section in its skeleton with no way back. -->
+        @if (seed() !== null) {
           <div class="mb-3 flex flex-wrap items-center gap-3">
             <button class="btn btn-sm btn-primary" (click)="redraw()">draw a new cipher</button>
-            <span class="font-mono text-xs">seed {{ currentSeed }}</span>
+            <span class="font-mono text-xs">seed {{ seed() }}</span>
             <span class="badge badge-ghost badge-sm">{{ pairs().length }} pairs</span>
           </div>
           <div class="overflow-x-auto">
