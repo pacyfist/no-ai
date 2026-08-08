@@ -25,3 +25,8 @@
 @theme {
   --font-sans: 'Roboto', ui-sans-serif, system-ui, sans-serif;
 }
+
+/* The navbar is sticky, so anchor targets need to clear it. */
+[id^='s0'] {
+  scroll-margin-top: 5rem;
+}

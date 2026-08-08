@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
-import { NoAiDirective } from '@pacyfist/no-ai';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'app-root',
-  imports: [NoAiDirective],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
