@@ -88,7 +88,11 @@ export class NoAiFontService {
       this.config.seed ??
       (this.isBrowser ? this.transferState.get(SEED_KEY, randomSeed()) : randomSeed());
 
-    if (!this.isBrowser) {
+    // Only an instance relying on an implicit seed needs to publish it for
+    // hydration. One with an explicit seed is already deterministic across
+    // server and client, and publishing would clobber the implicit instance's
+    // seed when several instances render on the server.
+    if (!this.isBrowser && this.config.seed === undefined) {
       this.transferState.set(SEED_KEY, seed);
     }
 
