@@ -39,7 +39,7 @@ testem.log
 /typings
 __screenshots__/
 
-# Output of scripts/verify-in-browser.mjs and scripts/compare-kerning.mjs
+# Output of scripts/verify-in-browser.mjs
 /scripts/*.png
 /scripts/.last-verify.json
 
