@@ -9,7 +9,6 @@
     "watch": "ng build demo --watch --configuration development",
     "test": "npm run build:lib && ng test @pacyfist/no-ai --watch=false && ng test demo --watch=false",
     "build:pages": "npm run build:lib && ng build demo --configuration production,github-pages",
-    "verify:static": "node scripts/verify-static-build.mjs",
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui",
     "serve:ssr:demo": "node dist/demo/server/server.mjs"

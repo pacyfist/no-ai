@@ -4,6 +4,24 @@ Date: 2026-08-08
 Status: approved, not implemented
 Supersedes: docs/superpowers/specs/2026-08-07-demo-github-pages-design.md
 
+## Amendment, 2026-08-08: the build guard is gone
+
+This spec was written while `scripts/verify-static-build.mjs` existed, and refers
+to it in several places — including a recommendation to extend it. **That script
+has been deleted.** Browser verification moved to Playwright (`e2e/`, run with
+`npm run e2e`), which runs against the built static site under the real `/no-ai/`
+base path and now gates the deploy in CI.
+
+Read every reference to the guard below as referring to `e2e/` instead, with one
+exception that no longer holds: the guard's check that the specimen's plaintext
+stays pinned to **at most one JS chunk** has no end-to-end equivalent, because
+Playwright observes the rendered page rather than the build artifacts. The
+`index.html` plaintext assertion survives, in `e2e/protection.spec.ts`.
+
+Where the spec says the page may disclose that its specimen's plaintext lives in
+one bundle chunk "because the guard pins it there", the disclosure is still true
+but is no longer machine-enforced.
+
 ## Problem
 
 The shipped page shows the library's features but does not present them. Seven

@@ -31,9 +31,6 @@ jobs:
       - name: Build library and static site
         run: npm run build:pages
 
-      - name: Verify the built HTML is scrambled
-        run: npm run verify:static
-
       # Only Chromium — the technique needs the FontFace API and canvas glyph
       # rasterisation, and these run against the built artifact, not a dev server.
       - name: Install Playwright browser

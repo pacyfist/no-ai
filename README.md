@@ -10,7 +10,7 @@ generated at runtime, so bulk scrapers extract gibberish.
 projects/
   pacyfist/no-ai/   the publishable library (ng-packagr)
   demo/             SSR demo app, consumes the library as an outside user would
-scripts/            real-browser verification helpers
+e2e/                Playwright checks against the built static site
 ```
 
 The demo imports `@pacyfist/no-ai` through the workspace path alias, which
@@ -46,7 +46,6 @@ npm run build:lib      # build the library — required before building the demo
 npm start              # dev server for the demo on :4321
 npm test               # unit tests for library + demo
 npm run build:pages    # prerendered static site in dist/demo/browser
-npm run verify:static  # assert the built HTML is scrambled and subpath-safe
 npm run e2e            # Playwright checks against the built site (run build:pages first)
 npm run e2e:ui         # the same suite in Playwright's watch UI
 ```
@@ -55,26 +54,23 @@ npm run e2e:ui         # the same suite in Playwright's watch UI
 
 ## Testing
 
-Three layers, because no single one can cover this library.
+Two layers, because unit tests alone cannot cover the central claim.
 
 **Unit tests** (`npm test`, Vitest + jsdom) cover the cipher, the font forge and
 the directives. They cannot cover the central claim: jsdom has no `FontFace`, so
 every unit test necessarily runs the fail-open path and never observes a forged
 font at all.
 
-**The build guard** (`npm run verify:static`) inspects bytes that never reach a
-browser — that the prerendered HTML holds no plaintext, that the SSR marker and
-transfer state are present, that no asset path is absolute, and that the demo
-specimen's plaintext stays pinned to a single JS chunk.
-
 **End-to-end** (`npm run e2e`, Playwright + Chromium) runs against the **built
 static site** served under the real `/no-ai/` base path by `e2e/serve-static.mjs`,
 so it exercises the artifact that actually ships. It is the only layer that
 proves the forged font registers, that the painted glyphs differ from the
 fallback, that the clipboard carries ciphertext, and that hydration does not
-scramble the static form twice.
+scramble the static form twice. It also asserts the served HTML contains no
+plaintext, that the SSR marker and transfer state are present, and that every
+request the page makes succeeds under the subpath.
 
-All three run in CI before the site is published.
+Both run in CI before the site is published.
 
 ## Deployment
 
@@ -86,15 +82,14 @@ site lives under the `/no-ai/` subpath, which is what `baseHref` targets.
 
 ```bash
 npm run build:pages    # prerendered static site in dist/demo/browser
-npm run verify:static  # assert the built HTML is scrambled and subpath-safe
+npm run e2e            # Playwright checks against that build
 ```
 
-`verify:static` runs in CI between build and upload, so a build that would ship
-readable text fails the deploy instead of publishing it. It checks that the
-article never appears in plaintext, that `.protected-body` prerendered, and that
-no asset path is absolute — the last one because an absolute `/fonts/…` resolves
-outside the subpath, the font 404s, and the library then fails open into a
-completely unprotected page that still looks fine.
+The end-to-end suite runs in CI between build and upload, so a build that would
+ship readable text fails the deploy instead of publishing it. It runs against
+the built output under the real `/no-ai/` base path, which is what catches an
+absolute `/fonts/…` — that resolves outside the subpath, the font 404s, and the
+library then fails open into a completely unprotected page that still looks fine.
 
 The `github-pages` build configuration only carries `outputMode` and `baseHref`.
 Angular configurations do not inherit, so builds name both:
