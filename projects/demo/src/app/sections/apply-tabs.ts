@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  afterRenderEffect,
+  computed,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { NoAiDirective, NoAiFontDirective, NoAiFontService, NoAiPipe } from '@pacyfist/no-ai';
 import { SectionHeading } from '../ui/section-heading';
 import { CodeBlock } from '../ui/code-block';
@@ -26,8 +35,10 @@ const TABS = [
 
 type TabId = (typeof TABS)[number]['id'];
 
+const STATIC_TEXT = 'Protected by element content.';
+
 const SNIPPETS = {
-  static: ['<p noAi>Protected by element content.</p>'],
+  static: [`<p noAi>${STATIC_TEXT}</p>`],
   bound: ['<p [noAi]="body()"></p>'],
   pipe: ['<h3 noAiFont>{{ title() | noAi }}</h3>'],
   trap: ['<!-- do not do this -->', '<p noAi>{{ title() }}</p>'],
@@ -42,8 +53,8 @@ const SNIPPETS = {
     <app-section-heading num="04" title="Three ways to apply it" />
     <p class="text-base-content/60 mb-4 max-w-3xl text-sm leading-relaxed">
       Every form the library offers, running for real. The readout under each one is that element's
-      own <code class="font-mono">innerText</code>, so you can see which forms protect and which do
-      not.
+      own <code class="font-mono">innerText</code>, read straight off the rendered specimen, so you
+      can see which forms protect and which do not.
     </p>
 
     <div role="tablist" class="tabs tabs-lift">
@@ -65,7 +76,9 @@ const SNIPPETS = {
         @switch (active()) {
           @case ('static') {
             <app-code-block [lines]="snippets.static" />
-            <p class="text-sm" aria-hidden="true" noAi>Protected by element content.</p>
+            <div class="rounded-box border-base-300 border p-3" [class.border-warning]="isEmpty()">
+              <p class="text-sm" aria-hidden="true" noAi #specimen>${STATIC_TEXT}</p>
+            </div>
             <p class="text-base-content/60 text-xs">
               The directive takes the element's own text, replaces it with the scrambled form and
               applies the forged font. This is the form that survives server rendering, so it is the
@@ -74,12 +87,16 @@ const SNIPPETS = {
           }
           @case ('bound') {
             <app-code-block [lines]="snippets.bound" />
-            <p class="text-sm" aria-hidden="true" [noAi]="bound()"></p>
+            <div class="rounded-box border-base-300 border p-3" [class.border-warning]="isEmpty()">
+              <p class="text-sm" aria-hidden="true" [noAi]="bound()" #specimen></p>
+            </div>
             <p class="text-base-content/60 text-xs">{{ boundNote }}</p>
           }
           @case ('pipe') {
             <app-code-block [lines]="snippets.pipe" />
-            <h3 class="text-sm" aria-hidden="true" noAiFont>{{ piped() | noAi }}</h3>
+            <div class="rounded-box border-base-300 border p-3" [class.border-warning]="isEmpty()">
+              <h3 class="text-sm" aria-hidden="true" noAiFont #specimen>{{ piped() | noAi }}</h3>
+            </div>
             <p class="text-base-content/60 text-xs">
               The pipe scrambles the string and
               <code class="font-mono">noAiFont</code> supplies the font without touching text. This
@@ -88,12 +105,24 @@ const SNIPPETS = {
           }
           @case ('trap') {
             <app-code-block [lines]="snippets.trap" />
-            <p class="text-sm" aria-hidden="true" noAi>{{ piped() }}</p>
+            <div
+              class="rounded-box border p-3"
+              [class.border-warning]="isEmpty()"
+              [class.border-base-300]="!isEmpty()"
+            >
+              <p class="text-sm" aria-hidden="true" noAi #specimen>{{ piped() }}</p>
+            </div>
+            @if (isEmpty()) {
+              <p class="text-warning/80 text-xs italic">this element is empty</p>
+            }
             <div class="alert alert-warning text-xs">
               <span>
-                The directive owns <code class="font-mono">textContent</code> and the interpolation
-                keeps rewriting it, so the two fight and the reader is left looking at whichever
-                wrote last. Use the pipe with <code class="font-mono">noAiFont</code> instead.
+                The directive reads the element's text in <code class="font-mono">ngOnInit</code>,
+                which runs before the interpolation has written anything, so it takes an empty
+                string as the original and overwrites Angular's text node with an empty one. The
+                interpolation then updates a node that is no longer attached, so nothing appears.
+                The content disappears entirely - use the pipe with
+                <code class="font-mono">noAiFont</code> instead.
               </span>
             </div>
           }
@@ -103,13 +132,22 @@ const SNIPPETS = {
           <div class="text-base-content/50 text-xs tracking-widest uppercase">
             what a scraper reads
           </div>
-          <p class="text-primary mt-1 font-mono text-xs break-all">{{ readout() }}</p>
+          @if (hasReadout()) {
+            <p class="text-primary mt-1 font-mono text-xs break-all">{{ readout() }}</p>
+          } @else {
+            <div class="skeleton mt-1 h-4 w-48"></div>
+          }
         </div>
       </div>
     </div>
   `,
 })
 export class ApplyTabs {
+  /**
+   * Not read for its value. Depending on the same signals the directives
+   * depend on means this effect re-reads the DOM whenever they re-apply, so
+   * the readout never lags behind the specimen it is meant to describe.
+   */
   private readonly noAi = inject(NoAiFontService);
 
   protected readonly tabs = TABS;
@@ -127,14 +165,29 @@ export class ApplyTabs {
   protected readonly bound = signal('Protected from a bound signal.');
   protected readonly piped = signal('Protected through the pipe.');
 
-  protected readonly readout = computed(() => {
-    switch (this.active()) {
-      case 'static':
-        return this.noAi.scramble('Protected by element content.');
-      case 'bound':
-        return this.noAi.scramble(this.bound());
-      default:
-        return this.noAi.scramble(this.piped());
-    }
-  });
+  /** The currently rendered specimen. Only one `@switch` case is in the DOM at a time. */
+  private readonly specimen = viewChild<ElementRef<HTMLElement>>('specimen');
+
+  /**
+   * The specimen's own `innerText`, read from the DOM rather than recomputed.
+   *
+   * Null until the first client-side read lands - `afterRenderEffect` never
+   * runs on the server, so a prerendered page has no readout yet and shows a
+   * skeleton in its place rather than a value the server cannot see.
+   */
+  protected readonly readout = signal<string | null>(null);
+
+  protected readonly hasReadout = computed(() => this.readout() !== null);
+  protected readonly isEmpty = computed(() => this.readout() === '');
+
+  constructor() {
+    afterRenderEffect({
+      read: () => {
+        this.noAi.fontStack();
+        this.noAi.hidden();
+        const el = this.specimen()?.nativeElement;
+        this.readout.set(el ? el.innerText : null);
+      },
+    });
+  }
 }
