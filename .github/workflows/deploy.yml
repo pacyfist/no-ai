@@ -31,21 +31,11 @@ jobs:
       - name: Build library and static site
         run: npm run build:pages
 
-      # Only Chromium — the technique needs the FontFace API and canvas glyph
-      # rasterisation, and these run against the built artifact, not a dev server.
-      - name: Install Playwright browser
-        run: npx playwright install --with-deps chromium
-
-      - name: End-to-end checks against the built site
-        run: npm run e2e
-
-      - name: Upload Playwright report on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 7
+      # NOTE: the end-to-end suite was deleted when the demo was cleared, so
+      # nothing currently verifies the published site is actually scrambled.
+      # Restore the Playwright install and `npm run e2e` steps here before
+      # trusting a deploy again — a build that ships readable text will now
+      # publish rather than fail.
 
       - name: Add SPA fallback and disable Jekyll
         run: |

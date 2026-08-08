@@ -1,42 +1,17 @@
-<div class="bg-base-200 min-h-screen">
-  <div class="navbar bg-base-100 border-base-300 border-b">
-    <div class="mx-auto flex w-full max-w-5xl items-center justify-between px-2">
-      <span class="font-mono text-sm font-semibold">&#64;pacyfist/no-ai</span>
-      <div class="flex items-center gap-2">
-        <span class="badge badge-soft badge-primary badge-sm">Angular {{ angularVersion }}</span>
-        <a
-          class="btn btn-ghost btn-xs"
-          href="https://github.com/pacyfist/no-ai"
-          rel="noopener"
-          target="_blank"
-          >GitHub</a
-        >
-      </div>
-    </div>
-  </div>
+<main class="bg-base-200 min-h-screen">
+  <div class="mx-auto w-full max-w-3xl px-4 py-16">
+    <h1 class="mb-6 text-4xl font-bold tracking-tight">&#64;pacyfist/no-ai</h1>
 
-  <main class="mx-auto w-full max-w-5xl px-4 py-10">
-    <header class="mb-8">
-      <h1 class="mb-3 text-4xl font-bold tracking-tight sm:text-5xl">Text a scraper can't read</h1>
-      <p class="text-base-content/70 max-w-3xl text-lg">
-        The paragraph below is stored in the DOM as a substitution cipher. A font built in your
-        browser at page load maps the scrambled codepoints back to the right glyph outlines, so you
-        read the original words while <code class="kbd kbd-sm">innerText</code> hands out nonsense.
-      </p>
-    </header>
-
-    <app-status-banner />
-    <app-proof-section />
-    <app-raw-html-section />
-    <app-api-section />
-    <app-config-lab />
-    <app-tradeoffs-section />
-    <app-install-section />
-  </main>
-
-  <footer class="footer footer-center text-base-content/60 border-base-300 mt-10 border-t p-6">
-    <p class="text-sm">
-      &#64;pacyfist/no-ai &mdash; AGPL-3.0-only. Roboto is Apache-2.0, Copyright Google LLC.
+    <!-- Describes the specimen; never reproduces it. A readable copy would sit
+         in the served HTML for a scraper to take. -->
+    <p class="sr-only">
+      A specimen of protected text follows. It is stored scrambled and repaired on screen by a
+      generated font, so it is deliberately unreadable here.
     </p>
-  </footer>
-</div>
+
+    <p class="protected-body leading-relaxed" aria-hidden="true" noAi>
+      This paragraph is stored in the DOM as a substitution cipher and repaired on screen by a font
+      built in your browser at page load.
+    </p>
+  </div>
+</main>
