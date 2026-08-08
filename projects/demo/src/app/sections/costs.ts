@@ -46,7 +46,12 @@ const COPY_ME = 'Select this sentence and copy it, then look at the panel below.
         <div class="card-body p-4">
           <h3 class="card-title text-xs">Copy and paste</h3>
           <p class="sr-only">A protected specimen you are invited to copy follows.</p>
-          <p class="text-sm" aria-hidden="true" noAi (copy)="onCopy()">{{ copyMe }}</p>
+          <!-- Element content, not an interpolation. Putting {{ }} inside a noAi
+               element is the documented trap: the directive takes over
+               textContent and detaches the node Angular then writes into. The
+               constant is spliced in here so this copy and the announced()
+               readout below cannot drift apart. -->
+          <p class="text-sm" aria-hidden="true" noAi (copy)="onCopy()">${COPY_ME}</p>
           <div class="border-base-300 mt-2 border-t pt-2">
             <div class="text-base-content/50 text-xs tracking-widest uppercase">your clipboard</div>
             @if (copied(); as taken) {
@@ -107,7 +112,6 @@ export class Costs {
   private readonly document = inject(DOCUMENT);
   private readonly noAi = inject(NoAiFontService);
 
-  protected readonly copyMe = COPY_ME;
   protected readonly copied = signal('');
 
   // computed, not signal: if the font fails to load the library stops
