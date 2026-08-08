@@ -45,10 +45,36 @@ stylesheet. daisyUI is a demo-only concern.
 npm run build:lib      # build the library — required before building the demo
 npm start              # dev server for the demo on :4321
 npm test               # unit tests for library + demo
-npm run verify:browser # end-to-end check in real Chrome (dev server must be running)
+npm run build:pages    # prerendered static site in dist/demo/browser
+npm run verify:static  # assert the built HTML is scrambled and subpath-safe
+npm run e2e            # Playwright checks against the built site (run build:pages first)
+npm run e2e:ui         # the same suite in Playwright's watch UI
 ```
 
 `npm start` and `npm test` both depend on the library being built first.
+
+## Testing
+
+Three layers, because no single one can cover this library.
+
+**Unit tests** (`npm test`, Vitest + jsdom) cover the cipher, the font forge and
+the directives. They cannot cover the central claim: jsdom has no `FontFace`, so
+every unit test necessarily runs the fail-open path and never observes a forged
+font at all.
+
+**The build guard** (`npm run verify:static`) inspects bytes that never reach a
+browser — that the prerendered HTML holds no plaintext, that the SSR marker and
+transfer state are present, that no asset path is absolute, and that the demo
+specimen's plaintext stays pinned to a single JS chunk.
+
+**End-to-end** (`npm run e2e`, Playwright + Chromium) runs against the **built
+static site** served under the real `/no-ai/` base path by `e2e/serve-static.mjs`,
+so it exercises the artifact that actually ships. It is the only layer that
+proves the forged font registers, that the painted glyphs differ from the
+fallback, that the clipboard carries ciphertext, and that hydration does not
+scramble the static form twice.
+
+All three run in CI before the site is published.
 
 ## Deployment
 

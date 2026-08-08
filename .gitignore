@@ -39,9 +39,11 @@ testem.log
 /typings
 __screenshots__/
 
-# Output of scripts/verify-in-browser.mjs
-/scripts/*.png
-/scripts/.last-verify.json
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
 
 # System files
 .DS_Store
