@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { NoAiDirective, NoAiFontService } from '@pacyfist/no-ai';
 
 /**
- * One protected sample plus its own status.
+ * One protected sample plus its own status and scraper readout.
  *
  * Instantiated once per child EnvironmentInjector, so `NoAiDirective` inside it
  * resolves that injector's `NoAiFontService` rather than the shell's.
@@ -16,27 +16,36 @@ import { NoAiDirective, NoAiFontService } from '@pacyfist/no-ai';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NoAiDirective],
   template: `
-    <div class="card bg-base-100 shadow-sm">
-      <div class="card-body p-4">
-        <h3 class="card-title justify-between text-xs">
-          This instance
-          <span class="badge badge-ghost badge-sm">
-            {{ noAi.failed() ? 'failed open' : noAi.active() ? 'protected' : 'disabled' }}
+    <div class="card bg-base-100 border-base-300 border">
+      <div class="card-body gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-base-content/50 text-xs font-bold tracking-widest uppercase">
+            Live sample
           </span>
-        </h3>
+          <span
+            class="badge"
+            [class.badge-primary]="noAi.active()"
+            [class.badge-warning]="noAi.failed()"
+          >
+            {{ status() }}
+          </span>
+        </div>
         <p class="sr-only">
-          A protected specimen follows. It is stored scrambled and repaired on screen by a generated
-          font, so it is deliberately unreadable in the page source.
+          A protected sample follows. It is stored scrambled and repaired on screen by a generated
+          font.
         </p>
         <p
-          class="text-sm leading-relaxed"
+          class="text-lg leading-relaxed"
           [attr.aria-hidden]="noAi.active() ? 'true' : null"
           [noAi]="text()"
         ></p>
+        <div class="rounded-field border-secondary/30 bot-scan border p-3">
+          <p class="text-secondary text-xs font-bold tracking-widest uppercase">A bot reads</p>
+          <p class="text-secondary mt-1 font-mono text-sm break-all">{{ botReads() }}</p>
+        </div>
         @if (noAi.failed(); as message) {
-          <p class="text-warning mt-2 font-mono text-xs break-all">{{ message }}</p>
+          <p class="text-warning font-mono text-xs break-all">{{ message }}</p>
         }
-        <p class="text-base-content/50 mt-2 font-mono text-xs">seed {{ noAi.map.seed }}</p>
       </div>
     </div>
   `,
@@ -44,4 +53,11 @@ import { NoAiDirective, NoAiFontService } from '@pacyfist/no-ai';
 export class SpecimenCard {
   protected readonly noAi = inject(NoAiFontService);
   readonly text = input.required<string>();
+
+  protected readonly status = computed(() =>
+    this.noAi.failed() ? 'unprotected, still readable' : this.noAi.active() ? 'protected' : 'off',
+  );
+
+  /** What `innerText` returns: the scrambled form, or the original once protection is off. */
+  protected readonly botReads = computed(() => this.noAi.scramble(this.text()));
 }

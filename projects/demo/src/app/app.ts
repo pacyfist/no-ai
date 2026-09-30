@@ -1,29 +1,23 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { ApplyTabs } from './sections/apply-tabs';
-import { Bench } from './sections/bench';
-import { BeyondAngular } from './sections/beyond-angular';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { NoAiFontService } from '@pacyfist/no-ai';
 import { Breakage } from './sections/breakage';
-import { CipherTable } from './sections/cipher-table';
-import { Costs } from './sections/costs';
-import { HeroMirror } from './sections/hero-mirror';
-import { ServedSource } from './sections/served-source';
+import { DeepDive } from './sections/deep-dive';
+import { Faq } from './sections/faq';
+import { GetStarted } from './sections/get-started';
+import { Hero } from './sections/hero';
+import { HowItWorks } from './sections/how-it-works';
 import { TakeIt } from './sections/take-it';
+import { TradeOffs } from './sections/trade-offs';
+import { TryIt } from './sections/try-it';
 
 @Component({
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    HeroMirror,
-    CipherTable,
-    ServedSource,
-    ApplyTabs,
-    Bench,
-    Breakage,
-    Costs,
-    BeyondAngular,
-    TakeIt,
-  ],
+  imports: [Hero, TryIt, HowItWorks, GetStarted, Breakage, TradeOffs, Faq, DeepDive, TakeIt],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class App {}
+export class App {
+  /** Drives the navbar's page-wide "bot vision" switch. */
+  protected readonly noAi = inject(NoAiFontService);
+}

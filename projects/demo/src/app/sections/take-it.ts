@@ -1,72 +1,45 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { SectionHeading } from '../ui/section-heading';
 import { CodeBlock } from '../ui/code-block';
 
-/** Everything needed for a decision, including a fast no. */
+/** The closing call to action, including a fast no. */
 @Component({
   selector: 'app-take-it',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SectionHeading, CodeBlock],
+  imports: [CodeBlock],
   template: `
-    <app-section-heading num="09" title="Take it" />
-
-    <div class="grid gap-3 md:grid-cols-2">
-      <div class="card bg-base-100 shadow-sm">
-        <div class="card-body p-4">
-          <h3 class="card-title mb-2 text-xs">install</h3>
-          <app-code-block prefix="shell" [lines]="install" />
-          <p class="text-base-content/60 mt-3 text-xs leading-relaxed">
-            Then add <code class="font-mono">{{ setupCall }}</code> to your application config and
-            put <code class="font-mono">noAi</code> on something.
-          </p>
-        </div>
+    <div class="mx-auto max-w-2xl text-center">
+      <h2 class="text-4xl leading-tight font-bold tracking-tight md:text-5xl">
+        Give the bots <span class="text-secondary font-mono tracking-normal">g!bb3r$h</span>.
+      </h2>
+      <p class="text-base-content/70 mt-4 text-lg">
+        Free and open source. Angular 21.2+, opentype.js 2, and a .ttf or .otf font you're allowed
+        to embed.
+      </p>
+      <div class="mt-8 text-left">
+        <app-code-block prefix="shell" [lines]="install" />
+      </div>
+      <div class="mt-6 flex flex-wrap justify-center gap-3">
+        <a class="btn btn-primary btn-lg" href="https://github.com/pacyfist/no-ai">
+          View on GitHub
+        </a>
+        <a
+          class="btn btn-ghost btn-lg"
+          href="https://github.com/pacyfist/no-ai/tree/main/projects/pacyfist/no-ai#readme"
+        >
+          Read the docs
+        </a>
       </div>
 
-      <div class="card bg-base-100 shadow-sm">
-        <div class="card-body p-4">
-          <h3 class="card-title mb-2 text-xs">facts</h3>
-          <table class="table table-xs">
-            <tbody>
-              <tr>
-                <td>peers</td>
-                <td class="font-mono">Angular ^21.2, opentype.js ^2</td>
-              </tr>
-              <tr>
-                <td>base font</td>
-                <td class="font-mono">.ttf or .otf, not WOFF</td>
-              </tr>
-              <tr>
-                <td>SSR</td>
-                <td class="font-mono">supported</td>
-              </tr>
-              <tr>
-                <td>licence</td>
-                <td class="text-warning font-mono">AGPL-3.0-only</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <div class="rounded-box border-warning/50 bg-base-100 mt-10 border p-5 text-left">
+        <p>
+          <strong class="text-warning">License: AGPL-3.0.</strong> If you use this on a public
+          website, that site's source code has to be released under the same license. That's on
+          purpose. Better a fast no here than a surprise later.
+        </p>
       </div>
     </div>
-
-    <div class="alert alert-warning mt-3 text-sm">
-      <span>
-        <strong>AGPL section 13.</strong> The network clause applies to software offered to users
-        over a network, which is what a web page is. Using this in a site you serve publicly means
-        that site's source falls under the same terms. That is the intent, not an oversight. Better
-        a fast no here than a surprise later.
-      </span>
-    </div>
-
-    <p class="text-base-content/50 mt-6 text-xs">
-      Source and full documentation:
-      <a class="link" href="https://github.com/pacyfist/no-ai">github.com/pacyfist/no-ai</a>
-    </p>
   `,
 })
 export class TakeIt {
   protected readonly install = ['npm install @pacyfist/no-ai opentype.js'];
-
-  /** Held as a field so the braces are not parsed as an interpolation. */
-  protected readonly setupCall = 'provideNoAi({ font })';
 }

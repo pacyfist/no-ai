@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { DEFAULT_CHARSET, NoAiConfig } from '@pacyfist/no-ai';
-import { SectionHeading } from '../ui/section-heading';
 import { IsolatedInstance } from '../ui/isolated-instance';
 
 const SAMPLE = 'Rendered with the settings on the left. Accents like cafe and naive pass through.';
@@ -9,16 +8,15 @@ const SAMPLE = 'Rendered with the settings on the left. Accents like cafe and na
 @Component({
   selector: 'app-bench',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SectionHeading, IsolatedInstance],
+  imports: [IsolatedInstance],
   template: `
-    <app-section-heading num="05" title="The bench" />
-    <p class="text-base-content/60 mb-4 max-w-3xl text-sm leading-relaxed">
-      The instance on the right has its own <code class="font-mono">provideNoAi</code> and its own
-      forged font. Turn a knob and only it changes; the rest of the page holds still.
+    <p class="text-base-content/70 mb-4 max-w-3xl">
+      The sample on the right has its own <code>provideNoAi()</code> and its own generated font.
+      Change a setting and only it changes.
     </p>
 
     <div class="grid gap-3 md:grid-cols-2">
-      <div class="card bg-base-100 shadow-sm">
+      <div class="card bg-base-200/60">
         <div class="card-body gap-3 p-4">
           <h3 class="card-title text-xs">provideNoAi()</h3>
 

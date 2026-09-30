@@ -9,7 +9,6 @@ import {
   viewChild,
 } from '@angular/core';
 import { NoAiDirective, NoAiFontDirective, NoAiFontService, NoAiPipe } from '@pacyfist/no-ai';
-import { SectionHeading } from '../ui/section-heading';
 import { CodeBlock } from '../ui/code-block';
 
 /**
@@ -23,14 +22,14 @@ import { CodeBlock } from '../ui/code-block';
  * out of date.
  */
 const BOUND_SSR_NOTE =
-  'The directive takes the bound string as the original. This form is scrambled during server ' +
-  'rendering as well, so it is safe for crawler-facing content.';
+  'For words that come from code or an API. Bind the string to the attribute and leave the ' +
+  'element empty. Also scrambled during server rendering.';
 
 const TABS = [
-  { id: 'static', label: '<p noAi>' },
-  { id: 'bound', label: '[noAi]="expr"' },
-  { id: 'pipe', label: '| noAi + noAiFont' },
-  { id: 'trap', label: 'the trap' },
+  { id: 'static', label: 'Fixed text' },
+  { id: 'bound', label: 'Text from a variable' },
+  { id: 'pipe', label: 'Inside {{ }}' },
+  { id: 'trap', label: "Don't do this" },
 ] as const;
 
 type TabId = (typeof TABS)[number]['id'];
@@ -44,26 +43,22 @@ const SNIPPETS = {
   trap: ['<!-- do not do this -->', '<p noAi>{{ title() }}</p>'],
 } as const;
 
-/** The whole template surface, each form running live with its own readout. */
+/**
+ * The three template forms, named by situation rather than syntax, each
+ * running live with its own element's innerText underneath.
+ */
 @Component({
   selector: 'app-apply-tabs',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SectionHeading, CodeBlock, NoAiDirective, NoAiFontDirective, NoAiPipe],
+  imports: [CodeBlock, NoAiDirective, NoAiFontDirective, NoAiPipe],
   template: `
-    <app-section-heading num="04" title="Three ways to apply it" />
-    <p class="text-base-content/60 mb-4 max-w-3xl text-sm leading-relaxed">
-      Every form the library offers, running for real. The readout under each one is that element's
-      own <code class="font-mono">innerText</code>, read straight off the rendered specimen, so you
-      can see which forms protect and which do not.
-    </p>
-
     <div role="tablist" class="tabs tabs-lift">
       @for (t of tabs; track t.id) {
         <button
           role="tab"
           class="tab"
           [class.tab-active]="active() === t.id"
-          [class.text-warning]="t.id === 'trap'"
+          [class.text-error]="t.id === 'trap'"
           (click)="active.set(t.id)"
         >
           {{ t.label }}
@@ -71,36 +66,34 @@ const SNIPPETS = {
       }
     </div>
 
-    <div class="card bg-base-100 rounded-t-none shadow-sm">
-      <div class="card-body gap-4 p-4">
+    <div class="card bg-base-100 border-base-300 rounded-t-none border">
+      <div class="card-body gap-4">
         @switch (active()) {
           @case ('static') {
             <app-code-block [lines]="snippets.static" />
             <div class="rounded-box border-base-300 border p-3" [class.border-warning]="isEmpty()">
-              <p class="text-sm" aria-hidden="true" noAi #specimen>${STATIC_TEXT}</p>
+              <p class="text-lg" aria-hidden="true" noAi #specimen>${STATIC_TEXT}</p>
             </div>
-            <p class="text-base-content/60 text-xs">
-              The directive takes the element's own text, replaces it with the scrambled form and
-              applies the forged font. This is the form that survives server rendering, so it is the
-              one crawler-facing content should use.
+            <p class="text-base-content/70">
+              For words written straight into the template. The most common case, and it is
+              scrambled during server rendering too, so crawlers never see the real text.
             </p>
           }
           @case ('bound') {
             <app-code-block [lines]="snippets.bound" />
             <div class="rounded-box border-base-300 border p-3" [class.border-warning]="isEmpty()">
-              <p class="text-sm" aria-hidden="true" [noAi]="bound()" #specimen></p>
+              <p class="text-lg" aria-hidden="true" [noAi]="bound()" #specimen></p>
             </div>
-            <p class="text-base-content/60 text-xs">{{ boundNote }}</p>
+            <p class="text-base-content/70">{{ boundNote }}</p>
           }
           @case ('pipe') {
             <app-code-block [lines]="snippets.pipe" />
             <div class="rounded-box border-base-300 border p-3" [class.border-warning]="isEmpty()">
-              <h3 class="text-sm" aria-hidden="true" noAiFont #specimen>{{ piped() | noAi }}</h3>
+              <h3 class="text-lg" aria-hidden="true" noAiFont #specimen>{{ piped() | noAi }}</h3>
             </div>
-            <p class="text-base-content/60 text-xs">
-              The pipe scrambles the string and
-              <code class="font-mono">noAiFont</code> supplies the font without touching text. This
-              is the form to use whenever Angular interpolates the content.
+            <p class="text-base-content/70">
+              When you're already interpolating. The <code>noAi</code> pipe scrambles the string and
+              the <code>noAiFont</code> attribute applies the decoder font.
             </p>
           }
           @case ('trap') {
@@ -110,30 +103,27 @@ const SNIPPETS = {
               [class.border-warning]="isEmpty()"
               [class.border-base-300]="!isEmpty()"
             >
-              <p class="text-sm" aria-hidden="true" noAi #specimen>{{ piped() }}</p>
+              <p class="text-lg" aria-hidden="true" noAi #specimen>{{ piped() }}</p>
             </div>
             @if (isEmpty()) {
-              <p class="text-warning/80 text-xs italic">this element is empty</p>
+              <p class="text-error text-sm italic">↑ this element is empty</p>
             }
-            <div class="alert alert-warning text-xs">
+            <div class="alert alert-error alert-soft">
               <span>
-                The directive reads the element's text in <code class="font-mono">ngOnInit</code>,
-                which runs before the interpolation has written anything, so it takes an empty
-                string as the original and overwrites Angular's text node with an empty one. The
-                interpolation then updates a node that is no longer attached, so nothing appears.
-                The content disappears entirely - use the pipe with
-                <code class="font-mono">noAiFont</code> instead.
+                The <code>noAi</code> attribute and <code>{{ braces }}</code> both try to own the
+                element's text, and the text ends up empty. Use the "Inside {{ braces }}" form
+                instead.
               </span>
             </div>
           }
         }
 
-        <div class="border-base-300 border-t pt-3">
-          <div class="text-base-content/50 text-xs tracking-widest uppercase">
-            what a scraper reads
+        <div class="rounded-field border-secondary/30 bot-scan border p-3">
+          <div class="text-secondary text-xs font-bold tracking-widest uppercase">
+            A bot reads (this element's innerText)
           </div>
           @if (hasReadout()) {
-            <p class="text-primary mt-1 font-mono text-xs break-all">{{ readout() }}</p>
+            <p class="text-secondary mt-1 min-h-6 font-mono break-all">{{ readout() }}</p>
           } @else {
             <div class="skeleton mt-1 h-4 w-48"></div>
           }
@@ -151,6 +141,9 @@ export class ApplyTabs {
   private readonly noAi = inject(NoAiFontService);
 
   protected readonly tabs = TABS;
+
+  /** Held as a field so the braces are not parsed as an interpolation. */
+  protected readonly braces = '{{ }}';
 
   /**
    * Snippets live here rather than inline in the template. An Angular template

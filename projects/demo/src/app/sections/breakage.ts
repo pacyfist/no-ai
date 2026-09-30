@@ -14,25 +14,25 @@ const SAMPLE = 'The page stays usable no matter which of these you pick.';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [SectionHeading, IsolatedInstance],
   template: `
-    <app-section-heading num="06" title="When it breaks" />
-    <p class="text-base-content/60 mb-4 max-w-3xl text-sm leading-relaxed">
-      These buttons really do break it. The library fails open by design, because unreadable content
-      is worse than unprotected content, so the specimen below stays readable in every case.
-    </p>
+    <app-section-heading eyebrow="It fails safe" title="Worst case: your text is just text">
+      If the decoder font can't be built, protected text quietly turns back into ordinary readable
+      text. Unprotected is the worst case, never unreadable. These buttons really break it.
+    </app-section-heading>
 
-    <div class="mb-3 flex flex-wrap gap-2">
+    <div class="mb-4 flex flex-wrap gap-2">
       @for (m of modes; track m.id) {
-        <button class="btn btn-sm" [class.btn-primary]="mode() === m.id" (click)="mode.set(m.id)">
+        <button class="btn" [class.btn-primary]="mode() === m.id" (click)="mode.set(m.id)">
           {{ m.label }}
         </button>
       }
     </div>
 
-    <div class="grid gap-3 md:grid-cols-2">
-      <div class="card bg-base-100 shadow-sm">
-        <div class="card-body p-4">
-          <h3 class="card-title text-xs">{{ current().label }}</h3>
-          <p class="text-base-content/60 text-xs leading-relaxed">{{ current().note }}</p>
+    <div class="grid gap-4 md:grid-cols-2">
+      <div class="card bg-base-100 border-base-300 border">
+        <div class="card-body">
+          <h3 class="card-title">{{ current().label }}</h3>
+          <p class="text-base-content/80 text-lg">{{ current().plain }}</p>
+          <p class="text-base-content/50 text-sm">{{ current().detail }}</p>
         </div>
       </div>
       <app-isolated-instance [text]="sample" [config]="config()" />
@@ -46,23 +46,32 @@ export class Breakage {
   protected readonly modes = [
     {
       id: 'healthy' as const,
-      label: 'working',
-      note: 'The baseline. The font forges, the specimen is protected, and the readout is gibberish.',
+      label: 'Working normally',
+      plain: 'The decoder font loads and the text is protected.',
+      detail: 'The baseline, for comparison.',
     },
     {
       id: 'no-font' as const,
-      label: 'kill the font fetch',
-      note: 'The base font request rejects. The library logs, sets failed(), flips active() to false, and every directive restores its readable text. The page is unharmed and merely unprotected.',
+      label: "Font won't load",
+      plain: 'Protection switches off and the real text is put back. Readers notice nothing.',
+      detail:
+        'The font request fails. The library logs an error, sets failed(), and every noAi element restores its original text.',
     },
     {
       id: 'missing-glyph' as const,
-      label: 'charset the font cannot cover',
-      note: 'The charset asks for an emoji Roboto has no glyph for. forgeScrambledFont throws NoAiFontError listing what is missing, rather than silently dropping the character and showing a reader the wrong letter. That throw is caught, so the page still fails open.',
+      label: 'Character the font lacks',
+      plain:
+        "The font can't draw an emoji it was asked to cover, so the library refuses to guess and falls back to plain text.",
+      detail:
+        'forgeScrambledFont throws NoAiFontError listing the missing characters rather than silently showing a reader the wrong letter. The throw is caught, so the page fails open.',
     },
     {
       id: 'flash' as const,
-      label: 'hideUntilReady off, slow font',
-      note: 'The font loader is delayed by two seconds and hideUntilReady is off, so you see the flash of gibberish the setting exists to prevent. Leave it on unless a visitor without JavaScript seeing nothing is worse for you than a brief flash.',
+      label: 'Slow network, no hiding',
+      plain:
+        "With hiding turned off, you'll see a two-second flash of gibberish while the font loads. That's why hiding is on by default.",
+      detail:
+        'hideUntilReady: false plus a font loader delayed by two seconds. Leave it on unless visitors without JavaScript seeing nothing is worse for you than a brief flash.',
     },
   ];
 

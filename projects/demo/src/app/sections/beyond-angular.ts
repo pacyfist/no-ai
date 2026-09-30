@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { buildScrambleMap, invertScrambleMap, scrambleText } from '@pacyfist/no-ai';
-import { SectionHeading } from '../ui/section-heading';
 import { CodeBlock } from '../ui/code-block';
 
 const SEED = 12345;
@@ -9,22 +8,21 @@ const SEED = 12345;
 @Component({
   selector: 'app-beyond-angular',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SectionHeading, CodeBlock],
+  imports: [CodeBlock],
   template: `
-    <app-section-heading num="08" title="Beyond Angular" />
-    <p class="text-base-content/60 mb-4 max-w-3xl text-sm leading-relaxed">
+    <p class="text-base-content/70 mb-4 max-w-3xl">
       The cipher has no framework in it. The same functions run in the browser, in an SSR process
       and in a plain Node script that pre-scrambles static content at build time.
     </p>
 
     <div class="grid gap-3 md:grid-cols-2">
-      <div class="card bg-base-100 shadow-sm">
+      <div class="card bg-base-200/60">
         <div class="card-body p-4">
           <h3 class="card-title mb-2 text-xs">node</h3>
           <app-code-block [lines]="snippet" />
         </div>
       </div>
-      <div class="card bg-base-100 shadow-sm">
+      <div class="card bg-base-200/60">
         <div class="card-body p-4">
           <h3 class="card-title justify-between text-xs">
             output
