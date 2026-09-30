@@ -6,7 +6,6 @@ import {
   signal,
 } from '@angular/core';
 import { buildScrambleMap, randomSeed } from '@pacyfist/no-ai';
-import { SectionHeading } from '../ui/section-heading';
 
 interface Pair {
   readonly from: string;
@@ -28,23 +27,19 @@ interface Pair {
 @Component({
   selector: 'app-cipher-table',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SectionHeading],
   template: `
-    <app-section-heading num="02" title="The cipher" />
-    <p class="text-base-content/60 mb-4 max-w-3xl text-sm leading-relaxed">
-      The substitution this instance drew. No character maps to itself, which the library guarantees
-      by construction: a plain shuffle leaves some letters in place, so it swaps those out
-      afterwards. Space is excluded on purpose, because it is the only character the browser can
-      break a line at.
+    <p class="text-base-content/70 mb-4 max-w-3xl">
+      A freshly drawn cipher. No character ever maps to itself, and spaces are never swapped,
+      because they are the only place a browser can wrap a line.
     </p>
 
-    <div class="card bg-base-100 shadow-sm">
+    <div class="card bg-base-200/60">
       <div class="card-body p-4">
         <!-- Explicit null check, not truthiness: a drawn seed of 0 is falsy and
              would strand this section in its skeleton with no way back. -->
         @if (seed() !== null) {
           <div class="mb-3 flex flex-wrap items-center gap-3">
-            <button class="btn btn-sm btn-primary" (click)="redraw()">draw a new cipher</button>
+            <button class="btn btn-sm btn-primary" (click)="redraw()">Shuffle</button>
             <span class="font-mono text-xs">seed {{ seed() }}</span>
             <span class="badge badge-ghost badge-sm">{{ pairs().length }} pairs</span>
           </div>
@@ -72,12 +67,6 @@ interface Pair {
         }
       </div>
     </div>
-
-    <p class="text-base-content/50 mt-3 text-xs leading-relaxed">
-      Full disclosure: the page's own specimen does not get a fresh cipher like this one. The site
-      is prerendered as static files, so one seed is baked in at build time and every visitor sees
-      it. This table runs its own client-side instance to show what a per-load cipher looks like.
-    </p>
   `,
 })
 export class CipherTable {
